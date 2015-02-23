@@ -9,25 +9,23 @@ namespace medida {
 MetricProcessor::~MetricProcessor() {
 }
 
-void MetricProcessor::Process(Counter& counter) {
+void MetricProcessor::Process(Counter& ) {
+}
+
+void MetricProcessor::Process(Histogram& ) {
+}
+
+void MetricProcessor::Process(Value& ) {
+}
+
+void MetricProcessor::Process(Meter& ) {
+}
+
+void MetricProcessor::Process(Timer& ) {
 }
 
 
-void MetricProcessor::Process(Histogram& histogram) {
+void MetricProcessor::Process(MetricInterface& ) {
 }
-
-
-void MetricProcessor::Process(Meter& meter) {
-}
-
-
-void MetricProcessor::Process(Timer& timer) {
-}
-
-
-void MetricProcessor::Process(MetricInterface& metric) {
-}
-
-
 
 } // namespace medida

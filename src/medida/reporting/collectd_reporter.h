@@ -15,8 +15,6 @@
 
 namespace medida {
 namespace reporting {
-
-
 class CollectdReporter : public AbstractPollingReporter, MetricProcessor {
  public:
   CollectdReporter(MetricsRegistry &registry, const std::string& hostname = "127.0.0.1", std::uint16_t port = 25826);
@@ -25,12 +23,12 @@ class CollectdReporter : public AbstractPollingReporter, MetricProcessor {
   virtual void Process(Counter& counter);
   virtual void Process(Meter& meter);
   virtual void Process(Histogram& histogram);
+  virtual void Process(Value& value);
   virtual void Process(Timer& timer);
  private:
   class Impl;
   std::unique_ptr<Impl> impl_;
 };
-
 
 } // namespace reporting
 } // namespace medida

@@ -51,6 +51,7 @@ class CollectdReporter::Impl {
   void Process(Counter& counter);
   void Process(Meter& meter);
   void Process(Histogram& histogram);
+  void Process(Value& value);
   void Process(Timer& timer);
  private:
   enum PartType {
@@ -71,7 +72,7 @@ class CollectdReporter::Impl {
     kDerive =   0x02,
     kAbsolute = 0x03
   };
-  struct Value {
+  struct TypeValue {
     DataType type;
     double value;
   };
@@ -87,7 +88,7 @@ class CollectdReporter::Impl {
   std::string current_instance_;
   void AddPart(PartType type, std::uint64_t number);
   void AddPart(PartType type, const std::string& text);
-  void AddValues(std::initializer_list<Value> values);
+  void AddValues(std::initializer_list<TypeValue> values);
   inline void pack8(std::uint8_t data);
   inline void pack16(std::uint16_t data);
   inline void pack64(std::uint64_t data);
@@ -125,6 +126,10 @@ void CollectdReporter::Process(Histogram& histogram) {
   impl_->Process(histogram);
 }
 
+
+void CollectdReporter::Process(Value& value) {
+    impl_->Process(value);
+}
 
 void CollectdReporter::Process(Timer& timer) {
   impl_->Process(timer);
@@ -225,6 +230,12 @@ void CollectdReporter::Impl::Process(Histogram& histogram) {
   });
 }
 
+void CollectdReporter::Impl::Process(Value& value) {
+    double val = value.value();
+    AddPart(kType, "medida_value");
+    AddPart(kTypeInstance, current_instance_);
+    AddValues({{kGauge, val}});
+}
 
 void CollectdReporter::Impl::Process(Timer& timer) {
   auto snapshot = timer.GetSnapshot();
@@ -244,7 +255,6 @@ void CollectdReporter::Impl::Process(Timer& timer) {
   });
 }
 
-
 void CollectdReporter::Impl::AddPart(PartType type, std::uint64_t number) {
   pack16(type);
   pack16(12);
@@ -261,7 +271,7 @@ void CollectdReporter::Impl::AddPart(PartType type, const std::string& text) {
 }
 
 
-void CollectdReporter::Impl::AddValues(std::initializer_list<Value> values) {
+void CollectdReporter::Impl::AddValues(std::initializer_list<TypeValue> values) {
   auto count = values.size();
   pack16(PartType::kValues);
   pack16(6 + count * 9); // 48 bit header, 8 + 64 bits per value
@@ -310,7 +320,6 @@ void CollectdReporter::Impl::move_ptr(std::uint16_t offs) {
     throw std::runtime_error("Message buffer overflow");
   }
 }
-
 
 } // namespace reporting
 } // namespace medida

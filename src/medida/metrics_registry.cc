@@ -11,14 +11,14 @@
 #include "medida/metric_name.h"
 
 namespace medida {
-
 class MetricsRegistry::Impl {
  public:
   Impl();
   ~Impl();
   Counter& NewCounter(const MetricName &name, std::int64_t init_value = 0);
   Histogram& NewHistogram(const MetricName &name,
-      SamplingInterface::SampleType sample_type = SamplingInterface::kUniform);
+                          SamplingInterface::SampleType sample_type = SamplingInterface::kUniform);
+  Value& NewValue(const MetricName &name);
   Meter& NewMeter(const MetricName &name, std::string event_type, 
       Clock::duration rate_unit = std::chrono::seconds(1));
   Timer& NewTimer(const MetricName &name,
@@ -52,6 +52,10 @@ Histogram& MetricsRegistry::NewHistogram(const MetricName &name,
 }
 
 
+Value& MetricsRegistry::NewValue(const MetricName &name) {
+    return impl_->NewValue(name);
+}
+    
 Meter& MetricsRegistry::NewMeter(const MetricName &name, std::string event_type,
     Clock::duration rate_unit) {
   return impl_->NewMeter(name, event_type, rate_unit);
@@ -90,6 +94,9 @@ Histogram& MetricsRegistry::Impl::NewHistogram(const MetricName &name,
   return NewMetric<Histogram>(name, sample_type);
 }
 
+Value& MetricsRegistry::Impl::NewValue(const MetricName &name) {
+    return NewMetric<Value>(name);
+}
 
 Meter& MetricsRegistry::Impl::NewMeter(const MetricName &name, std::string event_type,
     Clock::duration rate_unit) {
@@ -118,6 +125,4 @@ MetricType& MetricsRegistry::Impl::NewMetric(const MetricName& name, Args... arg
 std::map<MetricName, std::shared_ptr<MetricInterface>> MetricsRegistry::Impl::GetAllMetrics() const {
  return {metrics_}; 
 }
-
-
 } // namespace medida

@@ -21,6 +21,7 @@ set(test_sources
   test_metric_name.cc
   test_metrics_registry.cc
   test_timer.cc
+  test_value.cc
   reporting/test_collectd_reporter.cc
   reporting/test_console_reporter.cc
   reporting/test_json_reporter.cc

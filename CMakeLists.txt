@@ -38,6 +38,7 @@ set(medida_SOURCES
   src/medida/metrics_registry.cc
   src/medida/timer.cc
   src/medida/timer_context.cc
+  src/medida/value.cc
   src/medida/reporting/abstract_polling_reporter.cc
   src/medida/reporting/collectd_reporter.cc
   src/medida/reporting/console_reporter.cc
@@ -60,6 +61,7 @@ set(medida_HEADERS
   src/medida/summarizable_interface.h
   src/medida/timer.h
   src/medida/timer_context.h
+  src/medida/value.h
   src/medida/reporting/abstract_polling_reporter.h
   src/medida/reporting/collectd_reporter.h
   src/medida/reporting/console_reporter.h
@@ -114,6 +116,7 @@ install(FILES
   src/medida/summarizable_interface.h
   src/medida/timer.h
   src/medida/timer_context.h
+  src/medida/value.h
   src/medida/types.h
   DESTINATION include/medida/
 )
