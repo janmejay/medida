@@ -11,5 +11,6 @@
 #endif
 #include "medida/reporting/console_reporter.h"
 #include "medida/reporting/json_reporter.h"
+#include "medida/reporting/udp_json_reporter.h"
 
 #endif // MEDIDA_H_
