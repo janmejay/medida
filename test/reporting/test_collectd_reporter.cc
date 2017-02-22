@@ -39,10 +39,16 @@ int delete_file(const char* path, const struct stat*, int typeflag, struct FTW* 
 }
 
 void run_collectd_server(std::future<void>& stop, std::promise<bool>& result) {
-    if (nftw(STR(COLLECTD_CSV_OUTDIR), delete_file, 10, 0) != 0) {
-        std::cerr << "Collectd csv-out-dir cleanup failed ( path was: " << STR(COLLECTD_CSV_OUTDIR) << " ), error : " << strerror(errno) << "\n";
-        result.set_value(false);
-        return;
+    struct stat stat_csv_outdir;
+    if (stat(STR(COLLECTD_CSV_OUTDIR), &stat_csv_outdir) == 0) {
+        if (nftw(STR(COLLECTD_CSV_OUTDIR), delete_file, 10, 0) != 0) {
+            std::cerr << "Collectd csv-out-dir cleanup failed ( path was: " << STR(COLLECTD_CSV_OUTDIR) << " ), error : " << strerror(errno) << "\n";
+            result.set_value(false);
+            return;
+        }
+    } else {
+        std::cerr << "Had trouble stat-ing csv-outdir (" << STR(COLLECTD_CSV_OUTDIR) << "), err: '" << strerror(errno) << "', ignoring it\n";
+
     }
     bool all_good = true;
     auto pid = fork();
