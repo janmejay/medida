@@ -1,0 +1,23 @@
+AutoLoadPlugin true
+WriteQueueLimitHigh 10
+WriteQueueLimitLow   8
+Interval 1.0
+CollectInternalStats false
+MaxReadInterval 1
+
+PluginDir "${COLLECTD_PLUGIN_DIR_PATH}"
+TypesDB "${COLLECTD_TYPES_DB}"
+BaseDir "${COLLECTD_WORK_DIR}"
+PIDFile "${COLLECTD_WORK_DIR}/collectd.pid"
+
+LoadPlugin "network"
+LoadPlugin "csv"
+
+<Plugin "csv">
+  DataDir "${COLLECTD_CSV_OUTDIR}"
+  StoreRates true
+</Plugin>
+
+<Plugin "network">
+  Listen "127.0.0.1"
+</Plugin>

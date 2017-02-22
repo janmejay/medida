@@ -33,3 +33,10 @@
 /test/gtest-1.6.0/build-aux/config.sub.cdbs-orig
 CMakeCache.txt
 Makefile
+*.so
+*.so.*
+cscope.*
+TAGS
+/Testing
+*.cmake
+CMakeFiles
