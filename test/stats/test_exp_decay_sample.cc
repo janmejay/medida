@@ -10,7 +10,7 @@ using namespace medida::stats;
 
 TEST(ExpDecaySampleTest, aSampleOf100OutOf1000Elements) {
   ExpDecaySample sample {100, 0.99};
-  EXPECT_EQ(0, sample.size());
+  EXPECT_EQ(static_cast<std::size_t>(0), sample.size());
 
   auto t = medida::Clock::now();
 
@@ -18,10 +18,10 @@ TEST(ExpDecaySampleTest, aSampleOf100OutOf1000Elements) {
     sample.Update(i, t);
     t += std::chrono::microseconds(1);
   }
-  EXPECT_EQ(100, sample.size());
+  EXPECT_EQ(static_cast<std::size_t>(100), sample.size());
 
   auto snapshot = sample.MakeSnapshot();
-  EXPECT_EQ(100, snapshot.size());
+  EXPECT_EQ(static_cast<std::size_t>(100), snapshot.size());
 
   for (auto& v : snapshot.getValues()) {
     EXPECT_LT(v, 1000.0);
@@ -32,15 +32,15 @@ TEST(ExpDecaySampleTest, aSampleOf100OutOf1000Elements) {
 
 TEST(ExpDecaySampleTest, aSampleOf10OutOf1000Elements) {
   ExpDecaySample sample {100, 0.99};
-  EXPECT_EQ(0, sample.size());
+  EXPECT_EQ(static_cast<std::size_t>(0), sample.size());
 
   for (auto i = 0; i < 10; i++) {
     sample.Update(i);
   }
-  EXPECT_EQ(10, sample.size());
+  EXPECT_EQ(static_cast<std::size_t>(10), sample.size());
 
   auto snapshot = sample.MakeSnapshot();
-  EXPECT_EQ(10, snapshot.size());
+  EXPECT_EQ(static_cast<std::size_t>(10), snapshot.size());
 
   for (auto& v : snapshot.getValues()) {
     EXPECT_LT(v, 10.0);
@@ -55,10 +55,10 @@ TEST(ExpDecaySampleTest, aHeavilyBiasedSampleOf100OutOf1000Elements) {
   for (auto i = 0; i < 100; i++) {
     sample.Update(i);
   }
-  EXPECT_EQ(100, sample.size());
+  EXPECT_EQ(static_cast<std::size_t>(100), sample.size());
 
   auto snapshot = sample.MakeSnapshot();
-  EXPECT_EQ(100, snapshot.size());
+  EXPECT_EQ(static_cast<std::size_t>(100), snapshot.size());
 
   for (auto& v : snapshot.getValues()) {
     EXPECT_LT(v, 100.0);
@@ -75,7 +75,7 @@ TEST(ExpDecaySampleTest, longPeriodsOfInactivityShouldNotCorruptSamplingState) {
     sample.Update(1000 + i, t);
     t += std::chrono::milliseconds(100);
   }
-  EXPECT_EQ(10, sample.size());
+  EXPECT_EQ(static_cast<std::size_t>(10), sample.size());
 
   for (auto& v : sample.MakeSnapshot().getValues()) {
     EXPECT_LT(v, 2000.0);
@@ -88,7 +88,7 @@ TEST(ExpDecaySampleTest, longPeriodsOfInactivityShouldNotCorruptSamplingState) {
   // zero after rescale.
   t += std::chrono::hours(15);
   sample.Update(2000, t);
-  EXPECT_EQ(2, sample.size());
+  EXPECT_EQ(static_cast<std::size_t>(2), sample.size());
 
   for (auto& v : sample.MakeSnapshot().getValues()) {
     EXPECT_LT(v, 3000.0);
@@ -101,7 +101,7 @@ TEST(ExpDecaySampleTest, longPeriodsOfInactivityShouldNotCorruptSamplingState) {
     sample.Update(3000 + i, t);
     t += std::chrono::milliseconds(100);
   }
-  EXPECT_EQ(10, sample.size());
+  EXPECT_EQ(static_cast<std::size_t>(10), sample.size());
 
   for (auto& v : sample.MakeSnapshot().getValues()) {
     EXPECT_LE(v, 4000.0);

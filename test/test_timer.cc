@@ -32,12 +32,12 @@ TEST_F(TimerTest, hasRateUnit) {
 TEST_F(TimerTest, createFromRegistry) {
   MetricsRegistry registry {};
   auto& timer2 = registry.NewTimer({"a", "b", "c"});
-  EXPECT_EQ(0, timer2.count());
+  EXPECT_EQ(static_cast<std::uint64_t>(0), timer2.count());
 }
 
 
 TEST_F(TimerTest, aBlankTimer) {
-  EXPECT_EQ(0, timer.count());
+  EXPECT_EQ(static_cast<std::uint64_t>(0), timer.count());
   EXPECT_NEAR(0.0, timer.min(), 0.001);
   EXPECT_NEAR(0.0, timer.max(), 0.001);
   EXPECT_NEAR(0.0, timer.mean(), 0.001);
@@ -51,7 +51,7 @@ TEST_F(TimerTest, aBlankTimer) {
   EXPECT_NEAR(0.0, snapshot.getMedian(), 0.001);
   EXPECT_NEAR(0.0, snapshot.get75thPercentile(), 0.001);
   EXPECT_NEAR(0.0, snapshot.get99thPercentile(), 0.001);
-  EXPECT_EQ(0, snapshot.size());
+  EXPECT_EQ(static_cast<std::size_t>(0), snapshot.size());
 }
 
 
@@ -62,7 +62,7 @@ TEST_F(TimerTest, timingASeriesOfEvents) {
   timer.Update(std::chrono::milliseconds(30));
   timer.Update(std::chrono::milliseconds(40));
 
-  EXPECT_EQ(5, timer.count());
+  EXPECT_EQ(static_cast<std::uint64_t>(5), timer.count());
   EXPECT_NEAR(10.0, timer.min(), 0.001);
   EXPECT_NEAR(40.0, timer.max(), 0.001);
   EXPECT_NEAR(24.0, timer.mean(), 0.001);
@@ -72,7 +72,7 @@ TEST_F(TimerTest, timingASeriesOfEvents) {
   EXPECT_NEAR(20.0, snapshot.getMedian(), 0.001);
   EXPECT_NEAR(35.0, snapshot.get75thPercentile(), 0.001);
   EXPECT_NEAR(40.0, snapshot.get99thPercentile(), 0.001);
-  EXPECT_EQ(5, snapshot.size());
+  EXPECT_EQ(static_cast<std::size_t>(5), snapshot.size());
 }
 
 
@@ -92,7 +92,7 @@ TEST_F(TimerTest, timerTimeScope) {
     auto t = timer.TimeScope();
     std::this_thread::sleep_for(std::chrono::milliseconds(200));
   }
-  EXPECT_EQ(2, timer.count());
+  EXPECT_EQ(static_cast<std::uint64_t>(2), timer.count());
   EXPECT_NEAR(150.0, timer.mean(), 0.5);
 }
 
@@ -104,7 +104,7 @@ void my_func() {
 
 TEST_F(TimerTest, timerTimeFunction) {
   timer.Time(my_func);
-  EXPECT_EQ(1, timer.count());
+  EXPECT_EQ(static_cast<std::uint64_t>(1), timer.count());
   EXPECT_NEAR(100.0, timer.mean(), 0.5);
 }
 
@@ -113,6 +113,6 @@ TEST_F(TimerTest, timerTimeLambda) {
   timer.Time([]() {
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
   });
-  EXPECT_EQ(1, timer.count());
+  EXPECT_EQ(static_cast<std::uint64_t>(1), timer.count());
   EXPECT_NEAR(100.0, timer.mean(), 1.0);
 }

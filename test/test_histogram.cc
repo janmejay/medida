@@ -14,7 +14,7 @@ TEST(HistogramTest, anEmptyHistogram) {
   MetricsRegistry registry {};
   auto& histogram = registry.NewHistogram({"a", "b", "c"});
 
-  EXPECT_EQ(0, histogram.count());
+  EXPECT_EQ(static_cast<std::uint64_t>(0), histogram.count());
   EXPECT_EQ(0.0, histogram.max());
   EXPECT_EQ(0.0, histogram.min());
   EXPECT_EQ(0.0, histogram.mean());
@@ -25,7 +25,7 @@ TEST(HistogramTest, anEmptyHistogram) {
   EXPECT_EQ(0.0, snapshot.getMedian());
   EXPECT_EQ(0.0, snapshot.get75thPercentile());
   EXPECT_EQ(0.0, snapshot.get99thPercentile());
-  EXPECT_EQ(0, snapshot.size());
+  EXPECT_EQ(static_cast<std::size_t>(0), snapshot.size());
 }
 
 
@@ -37,7 +37,7 @@ TEST(HistogramTest, aHistogramWith1000Elements) {
     histogram.Update(i);
   }
 
-  EXPECT_EQ(1000, histogram.count());
+  EXPECT_EQ(static_cast<std::uint64_t>(1000), histogram.count());
   EXPECT_NEAR(1000.0, histogram.max(), 0.001);
   EXPECT_NEAR(1.0, histogram.min(), 0.001);
   EXPECT_NEAR(500.5, histogram.mean(), 0.001);
@@ -48,5 +48,5 @@ TEST(HistogramTest, aHistogramWith1000Elements) {
   EXPECT_NEAR(500.5, snapshot.getMedian(), 0.0001);
   EXPECT_NEAR(750.75, snapshot.get75thPercentile(), 0.0001);
   EXPECT_NEAR(990.99, snapshot.get99thPercentile(), 0.0001);
-  EXPECT_EQ(1000, snapshot.size());
+  EXPECT_EQ(static_cast<std::size_t>(1000), snapshot.size());
 }

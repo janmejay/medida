@@ -65,5 +65,5 @@ TEST_F(SnapshotTest, hasValues) {
 
 
 TEST_F(SnapshotTest, hasASize) {
-  EXPECT_EQ(5, snapshot.size());
+  EXPECT_EQ(static_cast<std::size_t>(5), snapshot.size());
 }

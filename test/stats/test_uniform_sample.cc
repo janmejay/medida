@@ -16,10 +16,10 @@ TEST(UniformSampleTest, aSampleOf100OutOf1000Elements) {
     sample.Update(i);
   }
 
-  EXPECT_EQ(100, sample.size());
+  EXPECT_EQ(static_cast<std::size_t>(100), sample.size());
 
   auto vals = sample.MakeSnapshot().getValues();
-  EXPECT_EQ(100, vals.size());
+  EXPECT_EQ(static_cast<std::size_t>(100), vals.size());
 
   for (auto& v : vals) {
     EXPECT_LT(v, 1000.0);
@@ -34,9 +34,9 @@ TEST(UniformSampleTest, clear) {
     sample.Update(i);
   }
 
-  EXPECT_EQ(10, sample.size());
+  EXPECT_EQ(static_cast<std::size_t>(10), sample.size());
 
   sample.Clear();
 
-  EXPECT_EQ(0, sample.size());
+  EXPECT_EQ(static_cast<std::size_t>(0), sample.size());
 }
