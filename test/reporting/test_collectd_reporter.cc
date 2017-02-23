@@ -151,136 +151,136 @@ double atof(const std::string& str) {
 #endif
 
 TEST(CollectdReporterTest, foo) {
-  MetricsRegistry registry {};
-  auto& counter = registry.NewCounter({"test", "reporter", "mycounter"});
-  auto& histogram = registry.NewHistogram({"test", "reporter", "myhistogram"});
-  auto& meter = registry.NewMeter({"test", "reporter", "mymeter"}, "cycles");
-  auto& timer = registry.NewTimer({"test", "reporter", "mytimer"});
-  CollectdReporter reporter {registry, "localhost", 25826};
-  for (auto i = 1; i <= 100; i++) {
-    auto t = timer.TimeScope();
-    counter.inc();
-    histogram.Update(i);
-    meter.Mark();
-    std::this_thread::sleep_for(std::chrono::milliseconds(5));
-  }
+    MetricsRegistry registry {};
+    auto& counter = registry.NewCounter({"test", "reporter", "mycounter"});
+    auto& histogram = registry.NewHistogram({"test", "reporter", "myhistogram"});
+    auto& meter = registry.NewMeter({"test", "reporter", "mymeter"}, "cycles");
+    auto& timer = registry.NewTimer({"test", "reporter", "mytimer"});
+    CollectdReporter reporter {registry, "localhost", 25826};
+    for (auto i = 1; i <= 100; i++) {
+        auto t = timer.TimeScope();
+        counter.inc();
+        histogram.Update(i);
+        meter.Mark();
+        std::this_thread::sleep_for(std::chrono::milliseconds(5));
+    }
 
 #ifdef COLLECTD_BIN_PATH
-  auto date_start = date_now();
-  std::promise<void> do_stop;
-  auto stop_fut = do_stop.get_future();
-  std::promise<bool> all_good;
-  std::thread collectd_server(run_collectd_server, std::ref(stop_fut), std::ref(all_good));
-  std::this_thread::sleep_for(std::chrono::seconds(1));
+    auto date_start = date_now();
+    std::promise<void> do_stop;
+    auto stop_fut = do_stop.get_future();
+    std::promise<bool> all_good;
+    std::thread collectd_server(run_collectd_server, std::ref(stop_fut), std::ref(all_good));
+    std::this_thread::sleep_for(std::chrono::seconds(1));
 #endif
 
-  reporter.Run();
+    reporter.Run();
   
 #ifdef COLLECTD_BIN_PATH
-  auto meter_mean_rate = meter.mean_rate();
-  auto min1_rate = meter.one_minute_rate();
-  auto min5_rate = meter.five_minute_rate();
-  auto min15_rate = meter.fifteen_minute_rate();
+    auto meter_mean_rate = meter.mean_rate();
+    auto min1_rate = meter.one_minute_rate();
+    auto min5_rate = meter.five_minute_rate();
+    auto min15_rate = meter.fifteen_minute_rate();
 
-  std::this_thread::sleep_for(std::chrono::seconds(1));
-  do_stop.set_value();
-  EXPECT_EQ(true, all_good.get_future().get());
-  collectd_server.join();
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+    do_stop.set_value();
+    EXPECT_EQ(true, all_good.get_future().get());
+    collectd_server.join();
 
-  EXPECT_EQ(date_now(), date_start);
+    EXPECT_EQ(date_now(), date_start);
 
-  std::vector<std::string> csv_cells;
-  cells_of("medida_counter-mycounter.count", date_start, csv_cells);
-  CellReader count_rdr(csv_cells, 2);
-  EXPECT_EQ("count", (count_rdr[{0, 1}]));
-  EXPECT_EQ("100.000000", (count_rdr[{1, 1}]));
+    std::vector<std::string> csv_cells;
+    cells_of("medida_counter-mycounter.count", date_start, csv_cells);
+    CellReader count_rdr(csv_cells, 2);
+    EXPECT_EQ("count", (count_rdr[{0, 1}]));
+    EXPECT_EQ("100.000000", (count_rdr[{1, 1}]));
 
-  cells_of("medida_histogram-myhistogram", date_start, csv_cells);
-  CellReader hist_rdr(csv_cells, 11);
+    cells_of("medida_histogram-myhistogram", date_start, csv_cells);
+    CellReader hist_rdr(csv_cells, 11);
 
-  EXPECT_EQ("min", (hist_rdr[{0, 1}]));
-  EXPECT_EQ("1.000000", (hist_rdr[{1, 1}]));
+    EXPECT_EQ("min", (hist_rdr[{0, 1}]));
+    EXPECT_EQ("1.000000", (hist_rdr[{1, 1}]));
 
-  EXPECT_EQ("max", (hist_rdr[{0, 2}]));
-  EXPECT_EQ("100.000000", (hist_rdr[{1, 2}]));
+    EXPECT_EQ("max", (hist_rdr[{0, 2}]));
+    EXPECT_EQ("100.000000", (hist_rdr[{1, 2}]));
 
-  EXPECT_EQ("mean", (hist_rdr[{0, 3}]));
-  EXPECT_EQ("50.500000", (hist_rdr[{1, 3}]));
+    EXPECT_EQ("mean", (hist_rdr[{0, 3}]));
+    EXPECT_EQ("50.500000", (hist_rdr[{1, 3}]));
 
-  EXPECT_EQ("std_dev", (hist_rdr[{0, 4}]));
-  EXPECT_EQ("29.011492", (hist_rdr[{1, 4}]));
+    EXPECT_EQ("std_dev", (hist_rdr[{0, 4}]));
+    EXPECT_EQ("29.011492", (hist_rdr[{1, 4}]));
 
-  EXPECT_EQ("median", (hist_rdr[{0, 5}]));
-  EXPECT_EQ("50.500000", (hist_rdr[{1, 5}]));
+    EXPECT_EQ("median", (hist_rdr[{0, 5}]));
+    EXPECT_EQ("50.500000", (hist_rdr[{1, 5}]));
 
-  EXPECT_EQ("75pct", (hist_rdr[{0, 6}]));
-  EXPECT_EQ("75.750000", (hist_rdr[{1, 6}]));
+    EXPECT_EQ("75pct", (hist_rdr[{0, 6}]));
+    EXPECT_EQ("75.750000", (hist_rdr[{1, 6}]));
 
-  EXPECT_EQ("95pct", (hist_rdr[{0, 7}]));
-  EXPECT_EQ("95.950000", (hist_rdr[{1, 7}]));
+    EXPECT_EQ("95pct", (hist_rdr[{0, 7}]));
+    EXPECT_EQ("95.950000", (hist_rdr[{1, 7}]));
 
-  EXPECT_EQ("98pct", (hist_rdr[{0, 8}]));
-  EXPECT_EQ("98.980000", (hist_rdr[{1, 8}]));
+    EXPECT_EQ("98pct", (hist_rdr[{0, 8}]));
+    EXPECT_EQ("98.980000", (hist_rdr[{1, 8}]));
 
-  EXPECT_EQ("99pct", (hist_rdr[{0, 9}]));
-  EXPECT_EQ("99.990000", (hist_rdr[{1, 9}]));
+    EXPECT_EQ("99pct", (hist_rdr[{0, 9}]));
+    EXPECT_EQ("99.990000", (hist_rdr[{1, 9}]));
 
-  EXPECT_EQ("999pct", (hist_rdr[{0, 10}]));
-  EXPECT_EQ("100.000000", (hist_rdr[{1, 10}]));
+    EXPECT_EQ("999pct", (hist_rdr[{0, 10}]));
+    EXPECT_EQ("100.000000", (hist_rdr[{1, 10}]));
 
 
-  cells_of("medida_timer-mytimer.ms", date_start, csv_cells);
-  CellReader tm_rdr(csv_cells, 11);
+    cells_of("medida_timer-mytimer.ms", date_start, csv_cells);
+    CellReader tm_rdr(csv_cells, 11);
 
-  auto ts = timer.GetSnapshot();
+    auto ts = timer.GetSnapshot();
 
-  EXPECT_EQ("min", (tm_rdr[{0, 1}]));
-  EXPECT_NEAR(timer.min(), atof(tm_rdr[{1, 1}]), 0.001);
+    EXPECT_EQ("min", (tm_rdr[{0, 1}]));
+    EXPECT_NEAR(timer.min(), atof(tm_rdr[{1, 1}]), 0.001);
 
-  EXPECT_EQ("max", (tm_rdr[{0, 2}]));
-  EXPECT_NEAR(timer.max(), atof(tm_rdr[{1, 2}]), 0.001);
+    EXPECT_EQ("max", (tm_rdr[{0, 2}]));
+    EXPECT_NEAR(timer.max(), atof(tm_rdr[{1, 2}]), 0.001);
 
-  EXPECT_EQ("mean", (tm_rdr[{0, 3}]));
-  EXPECT_NEAR(timer.mean(), atof(tm_rdr[{1, 3}]), 0.001);
+    EXPECT_EQ("mean", (tm_rdr[{0, 3}]));
+    EXPECT_NEAR(timer.mean(), atof(tm_rdr[{1, 3}]), 0.001);
 
-  EXPECT_EQ("std_dev", (tm_rdr[{0, 4}]));
-  EXPECT_NEAR(timer.std_dev(), atof(tm_rdr[{1, 4}]), 0.001);
+    EXPECT_EQ("std_dev", (tm_rdr[{0, 4}]));
+    EXPECT_NEAR(timer.std_dev(), atof(tm_rdr[{1, 4}]), 0.001);
 
-  EXPECT_EQ("median", (tm_rdr[{0, 5}]));
-  EXPECT_NEAR(ts.getMedian(), atof(tm_rdr[{1, 5}]), 0.001);
+    EXPECT_EQ("median", (tm_rdr[{0, 5}]));
+    EXPECT_NEAR(ts.getMedian(), atof(tm_rdr[{1, 5}]), 0.001);
 
-  EXPECT_EQ("75pct", (tm_rdr[{0, 6}]));
-  EXPECT_NEAR(ts.get75thPercentile(), atof(tm_rdr[{1, 6}]), 0.001);
+    EXPECT_EQ("75pct", (tm_rdr[{0, 6}]));
+    EXPECT_NEAR(ts.get75thPercentile(), atof(tm_rdr[{1, 6}]), 0.001);
 
-  EXPECT_EQ("95pct", (tm_rdr[{0, 7}]));
-  EXPECT_NEAR(ts.get95thPercentile(), atof(tm_rdr[{1, 7}]), 0.001);
+    EXPECT_EQ("95pct", (tm_rdr[{0, 7}]));
+    EXPECT_NEAR(ts.get95thPercentile(), atof(tm_rdr[{1, 7}]), 0.001);
 
-  EXPECT_EQ("98pct", (tm_rdr[{0, 8}]));
-  EXPECT_NEAR(ts.get98thPercentile(), atof(tm_rdr[{1, 8}]), 0.001);
+    EXPECT_EQ("98pct", (tm_rdr[{0, 8}]));
+    EXPECT_NEAR(ts.get98thPercentile(), atof(tm_rdr[{1, 8}]), 0.001);
 
-  EXPECT_EQ("99pct", (tm_rdr[{0, 9}]));
-  EXPECT_NEAR(ts.get99thPercentile(), atof(tm_rdr[{1, 9}]), 0.001);
+    EXPECT_EQ("99pct", (tm_rdr[{0, 9}]));
+    EXPECT_NEAR(ts.get99thPercentile(), atof(tm_rdr[{1, 9}]), 0.001);
 
-  EXPECT_EQ("999pct", (tm_rdr[{0, 10}]));
-  EXPECT_NEAR(ts.get999thPercentile(), atof(tm_rdr[{1, 10}]), 0.001);
+    EXPECT_EQ("999pct", (tm_rdr[{0, 10}]));
+    EXPECT_NEAR(ts.get999thPercentile(), atof(tm_rdr[{1, 10}]), 0.001);
 
-  cells_of("medida_meter-mymeter.cycles_per_s", date_start, csv_cells);
-  CellReader m_rdr(csv_cells, 6);
+    cells_of("medida_meter-mymeter.cycles_per_s", date_start, csv_cells);
+    CellReader m_rdr(csv_cells, 6);
 
-  EXPECT_EQ("count", (m_rdr[{0, 1}]));
-  EXPECT_NEAR(100.0, atof(m_rdr[{1, 1}]), 0.001);
+    EXPECT_EQ("count", (m_rdr[{0, 1}]));
+    EXPECT_NEAR(100.0, atof(m_rdr[{1, 1}]), 0.001);
 
-  EXPECT_EQ("mean_rate", (m_rdr[{0, 2}]));
-  EXPECT_NEAR(meter_mean_rate, atof(m_rdr[{1, 2}]), 0.5);
+    EXPECT_EQ("mean_rate", (m_rdr[{0, 2}]));
+    EXPECT_NEAR(meter_mean_rate, atof(m_rdr[{1, 2}]), 0.5);
 
-  EXPECT_EQ("1min_rate", (m_rdr[{0, 3}]));
-  EXPECT_NEAR(min1_rate, atof(m_rdr[{1, 3}]), 0.5);
+    EXPECT_EQ("1min_rate", (m_rdr[{0, 3}]));
+    EXPECT_NEAR(min1_rate, atof(m_rdr[{1, 3}]), 0.5);
 
-  EXPECT_EQ("5min_rate", (m_rdr[{0, 4}]));
-  EXPECT_NEAR(min5_rate, atof(m_rdr[{1, 4}]), 0.5);
+    EXPECT_EQ("5min_rate", (m_rdr[{0, 4}]));
+    EXPECT_NEAR(min5_rate, atof(m_rdr[{1, 4}]), 0.5);
 
-  EXPECT_EQ("15min_rate", (m_rdr[{0, 5}]));
-  EXPECT_NEAR(min15_rate, atof(m_rdr[{1, 5}]), 0.5);
+    EXPECT_EQ("15min_rate", (m_rdr[{0, 5}]));
+    EXPECT_NEAR(min15_rate, atof(m_rdr[{1, 5}]), 0.5);
 #endif
   
 }
