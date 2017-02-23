@@ -70,31 +70,29 @@ namespace medida {
 // === Implementation ===
 
 
-    Counter::Impl::Impl(std::int64_t init) : count_ {init} {
-    }
+    Counter::Impl::Impl(std::int64_t init) : count_ {init} { }
 
 
-    Counter::Impl::~Impl() {
-    }
+    Counter::Impl::~Impl() { }
 
 
     std::int64_t Counter::Impl::count() const {
-        return count_.load();
+        return count_.load(std::memory_order_relaxed);
     }
 
 
     void Counter::Impl::set_count(std::int64_t n) {
-        count_ = n;
+        count_.store(n, std::memory_order_relaxed);
     }
 
 
     void Counter::Impl::inc(std::int64_t n) {
-        count_ += n;
+        count_.fetch_add(n, std::memory_order_relaxed);
     }
 
 
     void Counter::Impl::dec(std::int64_t n) {
-        count_ -= n;
+        count_.fetch_sub(n, std::memory_order_relaxed);
     }
 
 

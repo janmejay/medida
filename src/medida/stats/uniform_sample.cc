@@ -85,25 +85,26 @@ namespace medida {
             for (auto& v : values_) {
                 v = 0;
             }
-            count_ = 0;
+            count_.store(0, std::memory_order_relaxed);
         }
 
 
         std::uint64_t UniformSample::Impl::size() const {
+            std::uint64_t count = count_.load(std::memory_order_relaxed);
+            std::lock_guard<std::mutex> lock {mutex_};
             std::uint64_t size = values_.size();
-            std::uint64_t count = count_.load();
             return std::min(count, size);
         }
 
 
         void UniformSample::Impl::Update(std::int64_t value) {
-            auto count = ++count_;
+            auto count = count_.fetch_add(1, std::memory_order_relaxed);
             std::lock_guard<std::mutex> lock {mutex_};
             auto size = values_.size();
             if (count < size) {
-                values_[count - 1] = value;
+                values_[count] = value;
             } else {
-                std::uniform_int_distribution<uint64_t> uniform(0, count - 1);
+                std::uniform_int_distribution<uint64_t> uniform(0, count);
                 auto rand = uniform(rng_);
                 if (rand < size) {
                     values_[rand] = value;
@@ -113,9 +114,9 @@ namespace medida {
 
 
         Snapshot UniformSample::Impl::MakeSnapshot() const {
-            std::uint64_t size = values_.size();
-            std::uint64_t count = count_.load();
+            std::uint64_t count = count_.load(std::memory_order_relaxed);
             std::lock_guard<std::mutex> lock {mutex_};
+            std::uint64_t size = values_.size();
             auto begin = std::begin(values_);
             return Snapshot {{begin, begin + std::min(count, size)}};
         }

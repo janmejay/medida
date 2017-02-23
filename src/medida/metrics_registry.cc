@@ -63,7 +63,8 @@ namespace medida {
     Value& MetricsRegistry::NewValue(const MetricName &name) {
         return impl_->NewValue(name);
     }
-    
+
+
     Meter& MetricsRegistry::NewMeter(const MetricName &name, std::string event_type, Clock::duration rate_unit) {
         return impl_->NewMeter(name, event_type, rate_unit);
     }
@@ -95,17 +96,18 @@ namespace medida {
         return NewMetric<Histogram>(name, sample_type);
     }
 
+    
     Value& MetricsRegistry::Impl::NewValue(const MetricName &name) {
         return NewMetric<Value>(name);
     }
 
+    
     Meter& MetricsRegistry::Impl::NewMeter(const MetricName &name, std::string event_type, Clock::duration rate_unit) {
         return NewMetric<Meter>(name, event_type, rate_unit);
     }
 
 
-    Timer& MetricsRegistry::Impl::NewTimer(const MetricName &name, std::chrono::nanoseconds duration_unit,
-                                           std::chrono::nanoseconds rate_unit) {
+    Timer& MetricsRegistry::Impl::NewTimer(const MetricName &name, std::chrono::nanoseconds duration_unit, std::chrono::nanoseconds rate_unit) {
         return NewMetric<Timer>(name, duration_unit, rate_unit);
     }
 
@@ -123,6 +125,7 @@ namespace medida {
     }
 
     std::map<MetricName, std::shared_ptr<MetricInterface>> MetricsRegistry::Impl::GetAllMetrics() const {
+        std::lock_guard<std::mutex> lock {mutex_};
         return {metrics_}; 
     }
 }

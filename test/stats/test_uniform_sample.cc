@@ -40,3 +40,17 @@ TEST(UniformSampleTest, clear) {
 
     EXPECT_EQ(static_cast<std::size_t>(0), sample.size());
 }
+
+
+TEST(UniformSampleTest, samplingAccuracy_InNoDropScenario) {
+    for (auto j = 0; j < 100; j++) {
+        UniformSample sample {10};
+        for (auto i = 0; i < 10; i++) {
+            sample.Update(i);
+        }
+
+        auto snapshot = sample.MakeSnapshot();
+    
+        EXPECT_NEAR(7.25, snapshot.get75thPercentile(), 0.01);
+    }
+}
