@@ -37,6 +37,6 @@ Makefile
 *.so.*
 cscope.*
 TAGS
-/Testing
+Testing
 *.cmake
 CMakeFiles
