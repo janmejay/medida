@@ -10,26 +10,37 @@
 #include <memory>
 
 namespace medida {
-namespace stats {
+    namespace stats {
+        class EWMA {
 
-class EWMA {
- public:
-  EWMA() = delete;
-  EWMA(double alpha, std::chrono::nanoseconds interval);
-  EWMA(EWMA &&other);
-  ~EWMA();
-  static EWMA oneMinuteEWMA();
-  static EWMA fiveMinuteEWMA();
-  static EWMA fifteenMinuteEWMA();
-  void update(std::int64_t n);
-  void tick();
-  double getRate(std::chrono::nanoseconds duration = std::chrono::seconds {1}) const;
- private:
-  class Impl;
-  std::unique_ptr<Impl> impl_;
-};
+        public:
+            EWMA() = delete;
 
-} // namespace stats
-} // namespace medida
+            EWMA(double alpha, std::chrono::nanoseconds interval);
+
+            EWMA(EWMA &&other);
+
+            ~EWMA();
+
+            static EWMA oneMinuteEWMA();
+
+            static EWMA fiveMinuteEWMA();
+
+            static EWMA fifteenMinuteEWMA();
+
+            void update(std::int64_t n);
+
+            void tick();
+
+            double getRate(std::chrono::nanoseconds duration = std::chrono::seconds {1}) const;
+
+        private:
+            class Impl;
+
+            std::unique_ptr<Impl> impl_;
+        };
+
+    }
+}
 
 #endif // MEDIDA_EWMA_H_

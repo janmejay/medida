@@ -12,24 +12,33 @@
 #include "medida/stats/sample.h"
 
 namespace medida {
-namespace stats {
+    namespace stats {
+        class ExpDecaySample : public Sample {
 
-class ExpDecaySample : public Sample {
- public:
-  ExpDecaySample() = delete;
-  ExpDecaySample(std::uint32_t reservoirSize, double alpha);
-  ~ExpDecaySample();
-  virtual void Clear();
-  virtual std::uint64_t size() const;
-  virtual void Update(std::int64_t value);
-  virtual void Update(std::int64_t value, Clock::time_point timestamp);
-  virtual Snapshot MakeSnapshot() const;
- private:
-  class Impl;
-  std::unique_ptr<Impl> impl_;
-};
+        public:
+            ExpDecaySample() = delete;
 
-} // namespace stats
-} // namespace medida
+            ExpDecaySample(std::uint32_t reservoirSize, double alpha);
+
+            ~ExpDecaySample();
+
+            virtual void Clear();
+
+            virtual std::uint64_t size() const;
+
+            virtual void Update(std::int64_t value);
+
+            virtual void Update(std::int64_t value, Clock::time_point timestamp);
+
+            virtual Snapshot MakeSnapshot() const;
+
+        private:
+            class Impl;
+
+            std::unique_ptr<Impl> impl_;
+        };
+
+    }
+}
 
 #endif // MEDIDA_EXP_DECAY_SAMPLE_H_

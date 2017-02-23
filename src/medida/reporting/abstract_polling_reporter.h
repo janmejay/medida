@@ -10,21 +10,26 @@
 #include "medida/types.h"
 
 namespace medida {
-namespace reporting {
+    namespace reporting {
+        class AbstractPollingReporter {
 
-class AbstractPollingReporter {
- public:
-  AbstractPollingReporter();
-  virtual ~AbstractPollingReporter();
-  virtual void Shutdown();
-  virtual void Start(Clock::duration period = std::chrono::seconds(5));
-  virtual void Run();
- private:
-  class Impl;
-  std::unique_ptr<Impl> impl_;
-};
+        public:
+            AbstractPollingReporter();
 
-} // namespace reporting
-} // namespace medida
+            virtual ~AbstractPollingReporter();
+
+            virtual void Shutdown();
+
+            virtual void Start(Clock::duration period = std::chrono::seconds(5));
+
+            virtual void Run();
+
+        private:
+            class Impl;
+
+            std::unique_ptr<Impl> impl_;
+        };
+    }
+}
 
 #endif // MEDIDA_REPORTING_ABSTRACT_POLLING_REPORTER_H_

@@ -14,27 +14,40 @@
 #include "medida/stats/sample.h"
 
 namespace medida {
+    class Histogram : public MetricInterface, SamplingInterface, SummarizableInterface {
 
-class Histogram : public MetricInterface, SamplingInterface, SummarizableInterface {
- public:
-  Histogram(SampleType sample_type = kUniform);
-  ~Histogram();
-  virtual stats::Snapshot GetSnapshot() const;
-  virtual double sum() const;
-  virtual double max() const;
-  virtual double min() const;
-  virtual double mean() const;
-  virtual double std_dev() const;
-  void Update(std::int64_t value);
-  std::uint64_t count() const;
-  double variance() const;
-  void Process(MetricProcessor& processor);
-  void Clear();
- private:
-  class Impl;
-  std::unique_ptr<Impl> impl_;
-};
+    public:
+        Histogram(SampleType sample_type = kUniform);
 
-} // namespace medida
+        ~Histogram();
+
+        virtual stats::Snapshot GetSnapshot() const;
+
+        virtual double sum() const;
+
+        virtual double max() const;
+
+        virtual double min() const;
+
+        virtual double mean() const;
+
+        virtual double std_dev() const;
+
+        void Update(std::int64_t value);
+
+        std::uint64_t count() const;
+
+        double variance() const;
+
+        void Process(MetricProcessor& processor);
+
+        void Clear();
+
+    private:
+        class Impl;
+
+        std::unique_ptr<Impl> impl_;
+    };
+}
 
 #endif // MEDIDA_HISTOGRAM_H_

@@ -9,8 +9,8 @@
 
 namespace medida {
 
-  typedef std::chrono::high_resolution_clock Clock;
+    typedef std::chrono::high_resolution_clock Clock;
 
-} // namespace medida
+}
 
 #endif // MEDIDA_TYPES_H_

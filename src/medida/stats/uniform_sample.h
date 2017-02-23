@@ -12,22 +12,28 @@
 #include "medida/stats/snapshot.h"
 
 namespace medida {
-namespace stats {
+    namespace stats {
+        class UniformSample : public Sample {
 
-class UniformSample : public Sample {
- public:
-  UniformSample(std::uint32_t reservoirSize);
-  ~UniformSample();
-  virtual void Clear();
-  virtual std::uint64_t size() const;
-  virtual void Update(std::int64_t value);
-  virtual Snapshot MakeSnapshot() const;
- private:
-  class Impl;
-  std::unique_ptr<Impl> impl_;
-};
+        public:
+            UniformSample(std::uint32_t reservoirSize);
 
-} // namespace stats
-} // namespace medida
+            ~UniformSample();
+
+            virtual void Clear();
+
+            virtual std::uint64_t size() const;
+
+            virtual void Update(std::int64_t value);
+
+            virtual Snapshot MakeSnapshot() const;
+
+        private:
+            class Impl;
+
+            std::unique_ptr<Impl> impl_;
+        };
+    }
+}
 
 #endif // MEDIDA_UNIFORM_SAMPLE_H_

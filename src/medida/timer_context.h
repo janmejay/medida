@@ -9,24 +9,33 @@
 #include <memory>
 
 namespace medida {
+    class Timer;
 
-class Timer;
+    class TimerContext {
 
-class TimerContext {
- public:
-  TimerContext(Timer& timer);
-  TimerContext(TimerContext &&);
-  TimerContext(TimerContext const&) = delete;
-  TimerContext& operator=(TimerContext const&) = delete;
-  ~TimerContext();
-  void Reset();
-  std::chrono::nanoseconds Stop();
- private:
-  class Impl;
-  void checkImpl() const;
-  std::unique_ptr<Impl> impl_;
-};
+    public:
+        TimerContext(Timer& timer);
 
-} // namespace medida
+        TimerContext(TimerContext &&);
+
+        TimerContext(TimerContext const&) = delete;
+
+        TimerContext& operator=(TimerContext const&) = delete;
+
+        ~TimerContext();
+
+        void Reset();
+
+        std::chrono::nanoseconds Stop();
+
+    private:
+        class Impl;
+
+        void checkImpl() const;
+
+        std::unique_ptr<Impl> impl_;
+    };
+
+}
 
 #endif // MEDIDA_TIMER_CONTEXT_H_

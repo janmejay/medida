@@ -12,24 +12,30 @@
 #include "medida/reporting/abstract_polling_reporter.h"
 
 namespace medida {
-namespace reporting {
+    namespace reporting {
+        class ConsoleReporter : public AbstractPollingReporter, public MetricProcessor {
 
-class ConsoleReporter : public AbstractPollingReporter, public MetricProcessor {
- public:
-  ConsoleReporter(MetricsRegistry &registry, std::ostream& out = std::cerr);
-  virtual ~ConsoleReporter();
-  virtual void Run();
-  virtual void Process(Counter& counter);
-  virtual void Process(Meter& meter);
-  virtual void Process(Histogram& histogram);
-  virtual void Process(Timer& timer);
- private:
-  class Impl;
-  std::unique_ptr<Impl> impl_;
-};
+        public:
+            ConsoleReporter(MetricsRegistry &registry, std::ostream& out = std::cerr);
 
+            virtual ~ConsoleReporter();
 
-} // namespace reporting
-} // namespace medida
+            virtual void Run();
+
+            virtual void Process(Counter& counter);
+
+            virtual void Process(Meter& meter);
+
+            virtual void Process(Histogram& histogram);
+
+            virtual void Process(Timer& timer);
+
+        private:
+            class Impl;
+
+            std::unique_ptr<Impl> impl_;
+        };
+    }
+}
 
 #endif // MEDIDA_REPORTING_CONSOLE_REPORTER_H_

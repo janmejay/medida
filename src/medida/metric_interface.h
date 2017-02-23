@@ -8,13 +8,13 @@
 #include "medida/metric_processor.h"
 
 namespace medida {
+    class MetricInterface {
 
-class MetricInterface {
-public:
-  virtual ~MetricInterface() {};
-  virtual void Process(MetricProcessor& processor) = 0;
-};
+    public:
+        virtual ~MetricInterface() {};
 
-} // namespace medida
+        virtual void Process(MetricProcessor& processor) = 0;
+    };
+}
 
 #endif // MEDIDA_METRIC_INTERFACE_H_

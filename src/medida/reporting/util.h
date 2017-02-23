@@ -9,11 +9,11 @@
 #include <string>
 
 namespace medida {
-namespace reporting {
+    namespace reporting {
 
-std::string FormatRateUnit(const std::chrono::nanoseconds& rate_unit);
+        std::string FormatRateUnit(const std::chrono::nanoseconds& rate_unit);
 
-} // namespace reporting
-} // namespace medida
+    }
+}
 
 #endif // MEDIDA_REPORTING_UTIL_H_

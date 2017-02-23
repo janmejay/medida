@@ -27,4 +27,4 @@ namespace medida {
     void Value::Update(std::int64_t value) {
         value_.store(value);
     }
-} // namespace medida
+}

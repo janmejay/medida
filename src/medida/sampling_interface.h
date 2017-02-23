@@ -8,12 +8,15 @@
 #include "medida/stats/snapshot.h"
 
 namespace medida {
-class SamplingInterface {
-public:
-  enum SampleType { kUniform, kBiased };
-  virtual ~SamplingInterface() {};
-  virtual stats::Snapshot GetSnapshot() const = 0;
-};
-} // namespace medida
+    class SamplingInterface {
+
+    public:
+        enum SampleType { kUniform, kBiased };
+
+        virtual ~SamplingInterface() {};
+
+        virtual stats::Snapshot GetSnapshot() const = 0;
+    };
+}
 
 #endif // MEDIDA_SAMPLING_INTERFACE_H_

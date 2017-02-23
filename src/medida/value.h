@@ -1,3 +1,6 @@
+#ifndef MEDIDA_VALUE_H_
+#define MEDIDA_VALUE_H_
+
 #include <cstdint>
 #include <memory>
 #include <atomic>
@@ -10,8 +13,8 @@
 #include "medida/stats/sample.h"
 
 namespace medida {
-
     class Value : public MetricInterface {
+
     public:
         Value();
 
@@ -28,5 +31,6 @@ namespace medida {
     private:
         std::atomic<std::int64_t> value_;
     };
+}
 
-} // namespace medida
+#endif // MEDIDA_VALUE_H_
