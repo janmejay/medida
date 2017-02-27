@@ -180,8 +180,9 @@ namespace medida {
 
 
     double Histogram::Impl::mean() const {
-        if (count_ > 0) {
-            return sum_ / (double)count_;
+        auto c = count();
+        if (c > 0) {
+            return sum_ / static_cast<double>(c);
         }
         return 0.0;
     }
@@ -212,19 +213,12 @@ namespace medida {
 
     void Histogram::Impl::Update(std::int64_t value) {
         sample_->Update(value);
-        if (count_ > 0) {
-            auto cur_max = max_.load();
-            auto cur_min = min_.load();
-            while (cur_max < value && !max_.compare_exchange_weak(cur_max, value)) {
-                // Spin until max is updated
-            }
-            while(cur_min > value && !min_.compare_exchange_weak(cur_min, value)) {
-                // Spin until min is updated
-            }
-        } else {
-            max_ = value;
-            min_ = value;
-        }
+        auto cur_max = max_.load();
+        auto cur_min = min_.load();
+        while (((count_ == 0) || (cur_max < value)) &&
+               !max_.compare_exchange_weak(cur_max, value));
+        while (((count_ == 0) || (cur_min > value)) &&
+               !min_.compare_exchange_weak(cur_min, value));
         sum_ += value;
         auto new_count = ++count_;
         std::lock_guard<std::mutex> lock {variance_mutex_};
