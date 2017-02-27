@@ -14,15 +14,15 @@ namespace medida {
 
         ~Impl();
 
-        std::string domain() const;
+        const std::string& domain() const;
 
-        std::string type() const;
+        const std::string& type() const;
 
-        std::string name() const;
+        const std::string& name() const;
 
-        std::string scope() const;
+        const std::string& scope() const;
 
-        std::string ToString() const;
+        const std::string& ToString() const;
 
         bool has_scope() const;
 
@@ -58,27 +58,27 @@ namespace medida {
     MetricName::~MetricName() { }
 
 
-    std::string MetricName::domain() const {
+    const std::string& MetricName::domain() const {
         return impl_->domain();
     }
 
 
-    std::string MetricName::type() const {
+    const std::string& MetricName::type() const {
         return impl_->type();
     }
 
 
-    std::string MetricName::name() const {
+    const std::string& MetricName::name() const {
         return impl_->name();
     }
 
 
-    std::string MetricName::scope() const {
+    const std::string& MetricName::scope() const {
         return impl_->scope();
     }
 
 
-    std::string MetricName::ToString() const {
+    const std::string& MetricName::ToString() const {
         return impl_->ToString();
     }
 
@@ -133,27 +133,27 @@ namespace medida {
     MetricName::Impl::~Impl() { }
 
 
-    std::string MetricName::Impl::domain() const {
+    const std::string& MetricName::Impl::domain() const {
         return domain_;
     }
 
 
-    std::string MetricName::Impl::type() const {
+    const std::string& MetricName::Impl::type() const {
         return type_;
     }
 
 
-    std::string MetricName::Impl::name() const {
+    const std::string& MetricName::Impl::name() const {
         return name_;
     }
 
 
-    std::string MetricName::Impl::scope() const {
+    const std::string& MetricName::Impl::scope() const {
         return scope_;
     }
 
 
-    std::string MetricName::Impl::ToString() const {
+    const std::string& MetricName::Impl::ToString() const {
         return repr_;
     }
 

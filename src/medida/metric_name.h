@@ -19,15 +19,15 @@ namespace medida {
 
         ~MetricName();
 
-        std::string domain() const;
+        const std::string& domain() const;
 
-        std::string type() const;
+        const std::string& type() const;
 
-        std::string name() const;
+        const std::string& name() const;
 
-        std::string scope() const;
+        const std::string& scope() const;
 
-        std::string ToString() const;
+        const std::string& ToString() const;
 
         bool has_scope() const;
 
