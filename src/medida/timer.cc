@@ -22,7 +22,7 @@ namespace medida {
 
         std::chrono::nanoseconds rate_unit() const;
 
-        std::string event_type() const;
+        const std::string& event_type() const;
 
         std::uint64_t count() const;
 
@@ -118,7 +118,7 @@ namespace medida {
     }
 
 
-    std::string Timer::event_type() const {
+    const std::string& Timer::event_type() const {
         return impl_->event_type();
     }
 
@@ -183,7 +183,11 @@ namespace medida {
           duration_unit_nanos_ {duration_unit.count()},
           rate_unit_           {rate_unit},
           meter_               {"calls", rate_unit},
-          histogram_           {SamplingInterface::kBiased} { }
+          histogram_           {SamplingInterface::kBiased} {
+              if (duration_unit_nanos_ <= 0) {
+                  throw std::invalid_argument("Invalid duration-unit value given.");
+              }
+          }
 
 
     Timer::Impl::~Impl() { }
@@ -229,7 +233,7 @@ namespace medida {
     }
 
 
-    std::string Timer::Impl::event_type() const {
+    const std::string& Timer::Impl::event_type() const {
         return meter_.event_type();
     }
 

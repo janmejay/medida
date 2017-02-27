@@ -19,13 +19,13 @@ namespace medida {
     class Meter : public MetricInterface, MeteredInterface {
 
     public:
-        Meter(std::string event_type, std::chrono::nanoseconds rate_unit = std::chrono::seconds(1));
+        Meter(const std::string& event_type, std::chrono::nanoseconds rate_unit = std::chrono::seconds(1));
 
         ~Meter();
 
         virtual std::chrono::nanoseconds rate_unit() const;
 
-        virtual std::string event_type() const;
+        virtual const std::string& event_type() const;
 
         virtual std::uint64_t count() const;
 

@@ -18,6 +18,5 @@ namespace medida {
 
     void MetricProcessor::Process(Timer& ) { }
 
-
     void MetricProcessor::Process(MetricInterface& ) { }
 }

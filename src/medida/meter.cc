@@ -14,13 +14,13 @@ namespace medida {
     class Meter::Impl {
 
     public:
-        Impl(std::string event_type, std::chrono::nanoseconds rate_unit = std::chrono::seconds(1));
+        Impl(const std::string& event_type, std::chrono::nanoseconds rate_unit = std::chrono::seconds(1));
 
         ~Impl();
 
         std::chrono::nanoseconds rate_unit() const;
 
-        std::string event_type() const;
+        const std::string& event_type() const;
 
         std::uint64_t count() const;
 
@@ -59,7 +59,7 @@ namespace medida {
     };
 
 
-    Meter::Meter(std::string event_type, std::chrono::nanoseconds rate_unit) : impl_ {new Meter::Impl {event_type, rate_unit}} { }
+    Meter::Meter(const std::string& event_type, std::chrono::nanoseconds rate_unit) : impl_ {new Meter::Impl {event_type, rate_unit}} { }
 
 
     Meter::~Meter() { }
@@ -70,7 +70,7 @@ namespace medida {
     }
 
 
-    std::string Meter::event_type() const {
+    const std::string& Meter::event_type() const {
         return impl_->event_type();
     }
 
@@ -113,7 +113,7 @@ namespace medida {
 // === Implementation ===
 
 
-    Meter::Impl::Impl(std::string event_type, std::chrono::nanoseconds rate_unit) 
+    Meter::Impl::Impl(const std::string& event_type, std::chrono::nanoseconds rate_unit) 
         : event_type_ (event_type),
           rate_unit_  (rate_unit),
           count_      (0),
@@ -133,7 +133,7 @@ namespace medida {
     }
 
 
-    std::string Meter::Impl::event_type() const {
+    const std::string& Meter::Impl::event_type() const {
         return event_type_;
     }
 

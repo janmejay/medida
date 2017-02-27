@@ -16,7 +16,7 @@ namespace medida {
 
         virtual std::chrono::nanoseconds rate_unit() const = 0;
 
-        virtual std::string event_type() const = 0;
+        virtual const std::string& event_type() const = 0;
 
         virtual std::uint64_t count() const = 0;
 
