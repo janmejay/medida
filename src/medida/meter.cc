@@ -53,7 +53,7 @@ namespace medida {
 
         stats::EWMA m15_rate_;
 
-        void Tick();
+        mutable std::mutex mutex_;
 
         void TickIfNecessary();
     };
@@ -121,7 +121,8 @@ namespace medida {
           last_tick_  (std::chrono::duration_cast<std::chrono::nanoseconds>(start_time_.time_since_epoch()).count()),
           m1_rate_    (stats::EWMA::oneMinuteEWMA()),
           m5_rate_    (stats::EWMA::fiveMinuteEWMA()),
-          m15_rate_   (stats::EWMA::fifteenMinuteEWMA()) { }
+          m15_rate_   (stats::EWMA::fifteenMinuteEWMA()),
+          mutex_      {} { }
 
 
     Meter::Impl::~Impl() { }
@@ -143,18 +144,21 @@ namespace medida {
 
 
     double Meter::Impl::fifteen_minute_rate() {
+        std::lock_guard<std::mutex> lock {mutex_};
         TickIfNecessary();
         return m15_rate_.getRate();
     }
 
 
     double Meter::Impl::five_minute_rate() {
+        std::lock_guard<std::mutex> lock {mutex_};
         TickIfNecessary();
         return m5_rate_.getRate();
     }
 
 
     double Meter::Impl::one_minute_rate() {
+        std::lock_guard<std::mutex> lock {mutex_};
         TickIfNecessary();
         return m1_rate_.getRate();
     }
@@ -171,6 +175,7 @@ namespace medida {
 
 
     void Meter::Impl::Mark(std::uint64_t n) {
+        std::lock_guard<std::mutex> lock {mutex_};
         TickIfNecessary();
         count_ += n;
         m1_rate_.update(n);
@@ -179,13 +184,7 @@ namespace medida {
     }
 
 
-    void Meter::Impl::Tick() {
-        m1_rate_.tick();
-        m5_rate_.tick();
-        m15_rate_.tick();
-    }
-
-
+    //must always be called after acquiring exclusive lock
     void Meter::Impl::TickIfNecessary() {
         auto old_tick = last_tick_.load();
         auto new_tick = std::chrono::duration_cast<std::chrono::nanoseconds>(Clock::now().time_since_epoch()).count();
@@ -194,7 +193,9 @@ namespace medida {
             last_tick_ = new_tick;
             auto required_ticks = age / kTickInterval;
             for (auto i = 0; i < required_ticks; i ++) {
-                Tick();
+                m1_rate_.tick();
+                m5_rate_.tick();
+                m15_rate_.tick();
             }
         }
     }
