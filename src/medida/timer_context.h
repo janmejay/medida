@@ -8,6 +8,11 @@
 #include <chrono>
 #include <memory>
 
+//This must not be shared across threads.
+//    It doesn't make sense to make this thread-safe, because
+//    sharing it across threads makes no sense.
+//    But in case someone comes up with a legit case to share it,
+//    the solution would be to make a thread-safe version of this.
 namespace medida {
     class Timer;
 

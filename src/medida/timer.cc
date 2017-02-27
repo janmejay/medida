@@ -281,7 +281,7 @@ namespace medida {
         auto values = histogram_.GetSnapshot().getValues();
         std::vector<double> converted;
         converted.reserve(values.size());
-        for (auto& v : values) {
+        for (auto& v : values) {//TODO: it may be worth pushing down this rebase (because additional snapshot-creation in this case can be avoided)
             converted.push_back(v / (double)duration_unit_nanos_);
         }
         return {converted};
