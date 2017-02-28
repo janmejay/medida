@@ -13,7 +13,7 @@
 
 namespace medida {
     namespace reporting {
-        class ConsoleReporter : public AbstractPollingReporter, public MetricProcessor {
+        class ConsoleReporter : public AbstractPollingReporter, MetricProcessor {
 
         public:
             ConsoleReporter(MetricsRegistry &registry, std::ostream& out = std::cerr);

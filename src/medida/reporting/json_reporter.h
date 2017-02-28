@@ -13,7 +13,7 @@
 
 namespace medida {
     namespace reporting {
-        class JsonReporter : public MetricProcessor {
+        class JsonReporter : MetricProcessor {
 
         public:
             JsonReporter(MetricsRegistry &registry);
