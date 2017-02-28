@@ -65,16 +65,16 @@ namespace medida {
 
 
         void AbstractPollingReporter::Impl::Shutdown() {
-            if (running_) {
-                running_ = false;
+            bool expected_old_value = true;
+            if (running_.compare_exchange_strong(expected_old_value, false)) {
                 thread_.join();
             }
         }
 
 
         void AbstractPollingReporter::Impl::Start(Clock::duration period) {
-            if (!running_) {
-                running_ = true;
+            bool expected_old_value = false;
+            if (running_.compare_exchange_strong(expected_old_value, true)) {
                 thread_ = std::thread(&AbstractPollingReporter::Impl::Loop, this, period);
             }
         }
