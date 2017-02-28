@@ -20,6 +20,8 @@ namespace medida {
 
             virtual void Shutdown();
 
+            // start should never be called after calling shutdown on this class
+            //    (behavior if start after shutdown is undefined).
             virtual void Start(Clock::duration period = std::chrono::seconds(5));
 
             virtual void Run();
