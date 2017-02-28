@@ -1,16 +1,21 @@
-Medida - Simple metrics for C++ programs
-========================================
+Medida - Simple metrics/runtime-stats for C++ programs
+======================================================
 
-*NOTE: Work in progress and not for human consumption! Go away!*
+This library aims to make it easy for applications to manage and publish runtime-stats / metrics that allow easy monitoring of application health and behavior.
 
-Project homepage and documentation: http://dln.github.com/medida/
+It supports the following data-types:
+        
+* Counter
+* Histogram
+* Meter
+* Timer
+* Value
 
-Created out of envy of Coda Hale's awesome Metrics library for the JVM.
+It supports the following reporters as of now:
 
+* CollectD: Pushes data to collectd over UDP, needs network plugin loaded on the collectd side.
+* Console:  Prints data to stdout.
+* JSON:     Returns json-serialized data, lets caller choose how to export it to out.
 
-Copyright
----------
-Copyright (c) 2012 Daniel Lundin
+Please check <project root>/examples/medida_example1.cc for a brief intro to it.
 
-This software is licensed under the Apache License, Version 2.0.
-Please see LICENSE for details.
