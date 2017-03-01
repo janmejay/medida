@@ -36,7 +36,7 @@ TEST_F(MetricNameTest, hasAScope) {
 
 
 TEST_F(MetricNameTest, isHumanReadable) {
-    EXPECT_EQ("domain.type.name.scope", name.ToString());
+    EXPECT_EQ("domain.type.name.scope", name.to_string());
 }
 
 

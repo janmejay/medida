@@ -29,21 +29,21 @@ namespace medida {
 
             std::size_t size() const;
 
-            double getValue(double quantile) const;
+            double quantile(double fraction) const;
 
-            double getMedian() const;
+            double median() const;
 
-            double get75thPercentile() const;
+            double percentile_75() const;
 
-            double get95thPercentile() const;
+            double percentile_95() const;
 
-            double get98thPercentile() const;
+            double percentile_98() const;
 
-            double get99thPercentile() const;
+            double percentile_99() const;
 
-            double get999thPercentile() const;
+            double percentile_999() const;
 
-            std::vector<double> getValues() const;
+            const std::vector<double>& values() const;
 
         private:
             std::vector<double> values_;
@@ -59,7 +59,7 @@ namespace medida {
         Snapshot::~Snapshot() { }
 
 
-        void Snapshot::checkImpl() const {
+        void Snapshot::check_impl() const {
             if (!impl_) {
                 throw std::runtime_error("Access to moved Snapshot::impl_");
             }
@@ -67,56 +67,56 @@ namespace medida {
 
 
         std::size_t Snapshot::size() const {
-            checkImpl();
+            check_impl();
             return impl_->size();
         }
 
 
-        std::vector<double> Snapshot::getValues() const {
-            checkImpl();
-            return impl_->getValues();
+        const std::vector<double>& Snapshot::values() const {
+            check_impl();
+            return impl_->values();
         }
 
 
-        double Snapshot::getValue(double quantile) const {
-            checkImpl();
-            return impl_->getValue(quantile);
+        double Snapshot::quantile(double fraction) const {
+            check_impl();
+            return impl_->quantile(fraction);
         }
 
 
-        double Snapshot::getMedian() const {
-            checkImpl();
-            return impl_->getMedian();
+        double Snapshot::median() const {
+            check_impl();
+            return impl_->median();
         }
 
 
-        double Snapshot::get75thPercentile() const {
-            checkImpl();
-            return impl_->get75thPercentile();
+        double Snapshot::percentile_75() const {
+            check_impl();
+            return impl_->percentile_75();
         }
 
 
-        double Snapshot::get95thPercentile() const {
-            checkImpl();
-            return impl_->get95thPercentile();
+        double Snapshot::percentile_95() const {
+            check_impl();
+            return impl_->percentile_95();
         }
 
 
-        double Snapshot::get98thPercentile() const {
-            checkImpl();
-            return impl_->get98thPercentile();
+        double Snapshot::percentile_98() const {
+            check_impl();
+            return impl_->percentile_98();
         }
 
 
-        double Snapshot::get99thPercentile() const {
-            checkImpl();
-            return impl_->get99thPercentile();
+        double Snapshot::percentile_99() const {
+            check_impl();
+            return impl_->percentile_99();
         }
 
 
-        double Snapshot::get999thPercentile() const {
-            checkImpl();
-            return impl_->get999thPercentile();
+        double Snapshot::percentile_999() const {
+            check_impl();
+            return impl_->percentile_999();
         }
 
         
@@ -136,13 +136,13 @@ namespace medida {
         }
 
 
-        std::vector<double> Snapshot::Impl::getValues() const {
+        const std::vector<double>& Snapshot::Impl::values() const {
             return values_;
         }
 
 
-        double Snapshot::Impl::getValue(double quantile) const {
-            if (quantile < 0.0 || quantile > 1.0) {
+        double Snapshot::Impl::quantile(double fraction) const {
+            if (fraction < 0.0 || fraction > 1.0) {
                 throw std::invalid_argument("quantile is not in [0..1]");
             }
 
@@ -150,7 +150,7 @@ namespace medida {
                 return 0.0;
             }
 
-            auto pos = quantile * (values_.size() + 1);
+            auto pos = fraction * (values_.size() + 1);
 
             if (pos < 1) {
                 return values_.front();
@@ -166,33 +166,33 @@ namespace medida {
         }
 
 
-        double Snapshot::Impl::getMedian() const {
-            return getValue(kMEDIAN_Q);
+        double Snapshot::Impl::median() const {
+            return quantile(kMEDIAN_Q);
         }
 
 
-        double Snapshot::Impl::get75thPercentile() const {
-            return getValue(kP75_Q);
+        double Snapshot::Impl::percentile_75() const {
+            return quantile(kP75_Q);
         }
 
 
-        double Snapshot::Impl::get95thPercentile() const {
-            return getValue(kP95_Q);
+        double Snapshot::Impl::percentile_95() const {
+            return quantile(kP95_Q);
         }
 
 
-        double Snapshot::Impl::get98thPercentile() const {
-            return getValue(kP98_Q);
+        double Snapshot::Impl::percentile_98() const {
+            return quantile(kP98_Q);
         }
 
 
-        double Snapshot::Impl::get99thPercentile() const {
-            return getValue(kP99_Q);
+        double Snapshot::Impl::percentile_99() const {
+            return quantile(kP99_Q);
         }
 
 
-        double Snapshot::Impl::get999thPercentile() const {
-            return getValue(kP999_Q);
+        double Snapshot::Impl::percentile_999() const {
+            return quantile(kP999_Q);
         }
     }
 }

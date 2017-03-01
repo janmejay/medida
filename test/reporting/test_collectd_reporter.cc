@@ -152,16 +152,16 @@ double atof(const std::string& str) {
 
 TEST(CollectdReporterTest, foo) {
     MetricsRegistry registry {};
-    auto& counter = registry.NewCounter({"test", "reporter", "mycounter"});
-    auto& histogram = registry.NewHistogram({"test", "reporter", "myhistogram"});
-    auto& meter = registry.NewMeter({"test", "reporter", "mymeter"}, "cycles");
-    auto& timer = registry.NewTimer({"test", "reporter", "mytimer"});
+    auto& counter = registry.new_counter({"test", "reporter", "mycounter"});
+    auto& histogram = registry.new_histogram({"test", "reporter", "myhistogram"});
+    auto& meter = registry.new_meter({"test", "reporter", "mymeter"}, "cycles");
+    auto& timer = registry.new_timer({"test", "reporter", "mytimer"});
     CollectdReporter reporter {registry, "localhost", 25826};
     for (auto i = 1; i <= 100; i++) {
-        auto t = timer.TimeScope();
+        auto t = timer.time_scope();
         counter.inc();
-        histogram.Update(i);
-        meter.Mark();
+        histogram.update(i);
+        meter.mark();
         std::this_thread::sleep_for(std::chrono::milliseconds(5));
     }
 
@@ -174,7 +174,7 @@ TEST(CollectdReporterTest, foo) {
     std::this_thread::sleep_for(std::chrono::seconds(1));
 #endif
 
-    reporter.Run();
+    reporter.run();
   
 #ifdef COLLECTD_BIN_PATH
     auto meter_mean_rate = meter.mean_rate();
@@ -232,7 +232,7 @@ TEST(CollectdReporterTest, foo) {
     cells_of("medida_timer-mytimer.ms", date_start, csv_cells);
     CellReader tm_rdr(csv_cells, 11);
 
-    auto ts = timer.GetSnapshot();
+    auto ts = timer.snapshot();
 
     EXPECT_EQ("min", (tm_rdr[{0, 1}]));
     EXPECT_NEAR(timer.min(), atof(tm_rdr[{1, 1}]), 0.001);
@@ -247,22 +247,22 @@ TEST(CollectdReporterTest, foo) {
     EXPECT_NEAR(timer.std_dev(), atof(tm_rdr[{1, 4}]), 0.001);
 
     EXPECT_EQ("median", (tm_rdr[{0, 5}]));
-    EXPECT_NEAR(ts.getMedian(), atof(tm_rdr[{1, 5}]), 0.001);
+    EXPECT_NEAR(ts.median(), atof(tm_rdr[{1, 5}]), 0.001);
 
     EXPECT_EQ("75pct", (tm_rdr[{0, 6}]));
-    EXPECT_NEAR(ts.get75thPercentile(), atof(tm_rdr[{1, 6}]), 0.001);
+    EXPECT_NEAR(ts.percentile_75(), atof(tm_rdr[{1, 6}]), 0.001);
 
     EXPECT_EQ("95pct", (tm_rdr[{0, 7}]));
-    EXPECT_NEAR(ts.get95thPercentile(), atof(tm_rdr[{1, 7}]), 0.001);
+    EXPECT_NEAR(ts.percentile_95(), atof(tm_rdr[{1, 7}]), 0.001);
 
     EXPECT_EQ("98pct", (tm_rdr[{0, 8}]));
-    EXPECT_NEAR(ts.get98thPercentile(), atof(tm_rdr[{1, 8}]), 0.001);
+    EXPECT_NEAR(ts.percentile_98(), atof(tm_rdr[{1, 8}]), 0.001);
 
     EXPECT_EQ("99pct", (tm_rdr[{0, 9}]));
-    EXPECT_NEAR(ts.get99thPercentile(), atof(tm_rdr[{1, 9}]), 0.001);
+    EXPECT_NEAR(ts.percentile_99(), atof(tm_rdr[{1, 9}]), 0.001);
 
     EXPECT_EQ("999pct", (tm_rdr[{0, 10}]));
-    EXPECT_NEAR(ts.get999thPercentile(), atof(tm_rdr[{1, 10}]), 0.001);
+    EXPECT_NEAR(ts.percentile_999(), atof(tm_rdr[{1, 10}]), 0.001);
 
     cells_of("medida_meter-mymeter.cycles_per_s", date_start, csv_cells);
     CellReader m_rdr(csv_cells, 6);

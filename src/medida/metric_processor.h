@@ -18,17 +18,17 @@ namespace medida {
     public:
         virtual ~MetricProcessor();
 
-        virtual void Process(Counter& counter);
+        virtual void process(Counter& counter);
 
-        virtual void Process(Histogram& histogram);
+        virtual void process(Histogram& histogram);
 
-        virtual void Process(Value& value);
+        virtual void process(Value& value);
 
-        virtual void Process(Meter& meter);
+        virtual void process(Meter& meter);
 
-        virtual void Process(Timer& timer);
+        virtual void process(Timer& timer);
 
-        virtual void Process(MetricInterface& metric);
+        virtual void process(MetricInterface& metric);
     };
 }
 

@@ -14,7 +14,7 @@ namespace medida {
         
         ~Impl();
         
-        void Process(MetricProcessor& processor);
+        void process(MetricProcessor& processor);
         
         std::int64_t count() const;
         
@@ -37,8 +37,8 @@ namespace medida {
     Counter::~Counter() { }
 
 
-    void Counter::Process(MetricProcessor& processor)  {
-        processor.Process(*this);  // FIXME: pimpl?
+    void Counter::process(MetricProcessor& processor)  {
+        processor.process(*this);  // FIXME: pimpl?
     }
 
 

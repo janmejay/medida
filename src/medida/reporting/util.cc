@@ -25,7 +25,7 @@ namespace medida {
             NANO_SECOND = "ns";
 
 
-        const std::string& FormatRateUnit(const std::chrono::nanoseconds& rate_unit) {
+        const std::string& format_rate_unit(const std::chrono::nanoseconds& rate_unit) {
             auto nanosecs = rate_unit.count();
             if (nanosecs >= NS_PER_DAY) {
                 return DAY;

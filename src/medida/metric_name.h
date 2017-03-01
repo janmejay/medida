@@ -27,7 +27,7 @@ namespace medida {
 
         const std::string& scope() const;
 
-        const std::string& ToString() const;
+        const std::string& to_string() const;
 
         bool has_scope() const;
 

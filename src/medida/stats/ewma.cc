@@ -31,7 +31,7 @@ namespace medida {
 
             void tick();
 
-            double getRate(std::chrono::nanoseconds duration = std::chrono::seconds {1}) const;
+            double rate(std::chrono::nanoseconds duration = std::chrono::seconds {1}) const;
 
         private:
             bool initialized_;
@@ -55,17 +55,17 @@ namespace medida {
         EWMA::~EWMA() { }
 
 
-        EWMA EWMA::oneMinuteEWMA() {
+        EWMA EWMA::one_minute_ewma() {
             return {kM1_ALPHA, std::chrono::seconds{5}};
         }
 
 
-        EWMA EWMA::fiveMinuteEWMA() {
+        EWMA EWMA::five_minute_ewma() {
             return {kM5_ALPHA, std::chrono::seconds{5}};
         }
 
 
-        EWMA EWMA::fifteenMinuteEWMA() {
+        EWMA EWMA::fifteen_minute_ewma() {
             return {kM15_ALPHA, std::chrono::seconds{5}};
         }
 
@@ -80,8 +80,8 @@ namespace medida {
         }
 
 
-        double EWMA::getRate(std::chrono::nanoseconds duration) const {
-            return impl_->getRate(duration);
+        double EWMA::rate(std::chrono::nanoseconds duration) const {
+            return impl_->rate(duration);
         }
 
 
@@ -114,17 +114,17 @@ namespace medida {
         void EWMA::Impl::tick() {
             double count = uncounted_;
             uncounted_ = 0;
-            auto instantRate = count / interval_nanos_;
+            auto instant_rate = count / interval_nanos_;
             if (initialized_) {
-                rate_ += (alpha_ * (instantRate - rate_));
+                rate_ += (alpha_ * (instant_rate - rate_));
             } else {
-                rate_ = instantRate;
+                rate_ = instant_rate;
                 initialized_ = true;
             }
         }
 
 
-        double EWMA::Impl::getRate(std::chrono::nanoseconds duration) const {
+        double EWMA::Impl::rate(std::chrono::nanoseconds duration) const {
             return rate_ * duration.count();
         }
     }

@@ -24,17 +24,17 @@ namespace medida {
 
             ~EWMA();
 
-            static EWMA oneMinuteEWMA();
+            static EWMA one_minute_ewma();
 
-            static EWMA fiveMinuteEWMA();
+            static EWMA five_minute_ewma();
 
-            static EWMA fifteenMinuteEWMA();
+            static EWMA fifteen_minute_ewma();
 
             void update(std::int64_t n);
 
             void tick();
 
-            double getRate(std::chrono::nanoseconds duration = std::chrono::seconds {1}) const;
+            double rate(std::chrono::nanoseconds duration = std::chrono::seconds {1}) const;
 
         private:
             class Impl;

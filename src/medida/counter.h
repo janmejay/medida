@@ -18,7 +18,7 @@ namespace medida {
         
         ~Counter();
         
-        void Process(MetricProcessor& processor);
+        void process(MetricProcessor& processor);
         
         std::int64_t count() const;
         

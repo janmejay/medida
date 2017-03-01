@@ -19,48 +19,48 @@ struct SnapshotTest : public ::testing::Test {
 
 
 TEST_F(SnapshotTest, smallQuantilesAreTheFirstValue) {
-    EXPECT_DOUBLE_EQ(1, snapshot.getValue(0.0));
+    EXPECT_DOUBLE_EQ(1, snapshot.quantile(0.0));
 }
 
 
 TEST_F(SnapshotTest, bigQuantilesAreTheLastValue) {
-    EXPECT_DOUBLE_EQ(5, snapshot.getValue(1.0));
+    EXPECT_DOUBLE_EQ(5, snapshot.quantile(1.0));
 }
 
 
 TEST_F(SnapshotTest, hasAMedian) {
-    EXPECT_DOUBLE_EQ(3, snapshot.getMedian());
+    EXPECT_DOUBLE_EQ(3, snapshot.median());
 }
 
 
 TEST_F(SnapshotTest, hasAp75) {
-    EXPECT_DOUBLE_EQ(4.5, snapshot.get75thPercentile());
+    EXPECT_DOUBLE_EQ(4.5, snapshot.percentile_75());
 }
 
 
 TEST_F(SnapshotTest, hasAp95) {
-    EXPECT_DOUBLE_EQ(5.0, snapshot.get95thPercentile());
+    EXPECT_DOUBLE_EQ(5.0, snapshot.percentile_95());
 }
 
 
 TEST_F(SnapshotTest, hasAp98) {
-    EXPECT_DOUBLE_EQ(5.0, snapshot.get98thPercentile());
+    EXPECT_DOUBLE_EQ(5.0, snapshot.percentile_98());
 }
 
 
 TEST_F(SnapshotTest, hasAp99) {
-    EXPECT_DOUBLE_EQ(5.0, snapshot.get99thPercentile());
+    EXPECT_DOUBLE_EQ(5.0, snapshot.percentile_99());
 }
 
 
 TEST_F(SnapshotTest, hasAp999) {
-    EXPECT_DOUBLE_EQ(5.0, snapshot.get999thPercentile());
+    EXPECT_DOUBLE_EQ(5.0, snapshot.percentile_999());
 }
 
 
 TEST_F(SnapshotTest, hasValues) {
     auto ref = {1, 2, 3, 4, 5};
-    EXPECT_TRUE(std::equal(ref.begin(), ref.end(), snapshot.getValues().begin()));
+    EXPECT_TRUE(std::equal(ref.begin(), ref.end(), snapshot.values().begin()));
 }
 
 

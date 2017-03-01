@@ -8,15 +8,15 @@ namespace medida {
 
     MetricProcessor::~MetricProcessor() { }
 
-    void MetricProcessor::Process(Counter& ) { }
+    void MetricProcessor::process(Counter& ) { }
 
-    void MetricProcessor::Process(Histogram& ) { }
+    void MetricProcessor::process(Histogram& ) { }
 
-    void MetricProcessor::Process(Value& ) { }
+    void MetricProcessor::process(Value& ) { }
 
-    void MetricProcessor::Process(Meter& ) { }
+    void MetricProcessor::process(Meter& ) { }
 
-    void MetricProcessor::Process(Timer& ) { }
+    void MetricProcessor::process(Timer& ) { }
 
-    void MetricProcessor::Process(MetricInterface& ) { }
+    void MetricProcessor::process(MetricInterface& ) { }
 }

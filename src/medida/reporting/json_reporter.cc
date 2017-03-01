@@ -25,15 +25,15 @@ namespace medida {
 
             ~Impl();
 
-            void Process(Counter& counter);
+            void process(Counter& counter);
 
-            void Process(Meter& meter);
+            void process(Meter& meter);
 
-            void Process(Histogram& histogram);
+            void process(Histogram& histogram);
 
-            void Process(Timer& timer);
+            void process(Timer& timer);
 
-            std::string Report();
+            std::string report();
 
         private:
             JsonReporter& self_;
@@ -54,28 +54,28 @@ namespace medida {
         JsonReporter::~JsonReporter() { }
 
 
-        std::string JsonReporter::Report() {
-            return impl_->Report();
+        std::string JsonReporter::report() {
+            return impl_->report();
         }
 
 
-        void JsonReporter::Process(Counter& counter) {
-            impl_->Process(counter);
+        void JsonReporter::process(Counter& counter) {
+            impl_->process(counter);
         }
 
 
-        void JsonReporter::Process(Meter& meter) {
-            impl_->Process(meter);
+        void JsonReporter::process(Meter& meter) {
+            impl_->process(meter);
         }
 
 
-        void JsonReporter::Process(Histogram& histogram) {
-            impl_->Process(histogram);
+        void JsonReporter::process(Histogram& histogram) {
+            impl_->process(histogram);
         }
 
 
-        void JsonReporter::Process(Timer& timer) {
-            impl_->Process(timer);
+        void JsonReporter::process(Timer& timer) {
+            impl_->process(timer);
         }
 
 
@@ -102,7 +102,7 @@ namespace medida {
         JsonReporter::Impl::~Impl() { }
 
 
-        std::string JsonReporter::Impl::Report() {
+        std::string JsonReporter::Impl::report() {
             auto t = std::time(NULL);
             char mbstr[32] = "";
 
@@ -125,7 +125,7 @@ namespace medida {
                  << "\"uname\":\"" << uname_ << "\"," << std::endl
                  << "\"metrics\":{" << std::endl;
             auto first = true;
-            for (auto& kv : registry_.GetAllMetrics()) {
+            for (auto& kv : registry_.get_all_metrics()) {
                 auto name = kv.first;
                 auto metric = kv.second;
                 if (first) {
@@ -133,8 +133,8 @@ namespace medida {
                 } else {
                     out_ << ",";
                 }
-                out_ << "\"" << name.ToString() << "\":{" << std::endl;
-                metric->Process(self_);
+                out_ << "\"" << name.to_string() << "\":{" << std::endl;
+                metric->process(self_);
                 out_ << "}" << std::endl;
             }
             out_ << "}"    // metrics
@@ -143,15 +143,15 @@ namespace medida {
         }
 
 
-        void JsonReporter::Impl::Process(Counter& counter) {
+        void JsonReporter::Impl::process(Counter& counter) {
             out_ << "\"type\":\"counter\"," << std::endl;
             out_ << "\"count\":" << counter.count() << std::endl;
         }
 
 
-        void JsonReporter::Impl::Process(Meter& meter) {
+        void JsonReporter::Impl::process(Meter& meter) {
             auto event_type = meter.event_type();
-            auto unit = FormatRateUnit(meter.rate_unit());
+            auto unit = format_rate_unit(meter.rate_unit());
             out_ << "\"type\":\"meter\"," << std::endl
                  << "\"count\":" << meter.count() << "," << std::endl
                  << "\"event_type\":\"" << event_type << "\"," << std::endl
@@ -163,8 +163,8 @@ namespace medida {
         }
 
 
-        void JsonReporter::Impl::Process(Histogram& histogram) {
-            auto snapshot = histogram.GetSnapshot();
+        void JsonReporter::Impl::process(Histogram& histogram) {
+            auto snapshot = histogram.snapshot();
 #ifdef _WIN32
 #undef min
 #undef max
@@ -174,19 +174,19 @@ namespace medida {
                  << "\"max\":" << histogram.max() << "," << std::endl
                  << "\"mean\":" << histogram.mean() << "," << std::endl
                  << "\"stddev\":" << histogram.std_dev() << "," << std::endl
-                 << "\"median\":" << snapshot.getMedian() << "," << std::endl
-                 << "\"75%\":" << snapshot.get75thPercentile() << "," << std::endl
-                 << "\"95%\":" << snapshot.get95thPercentile() << "," << std::endl
-                 << "\"98%\":" << snapshot.get98thPercentile() << "," << std::endl
-                 << "\"99%\":" << snapshot.get99thPercentile() << "," << std::endl
-                 << "\"99.9%\":" << snapshot.get999thPercentile() << std::endl;
+                 << "\"median\":" << snapshot.median() << "," << std::endl
+                 << "\"75%\":"   << snapshot.percentile_75() << "," << std::endl
+                 << "\"95%\":"   << snapshot.percentile_95() << "," << std::endl
+                 << "\"98%\":"   << snapshot.percentile_98() << "," << std::endl
+                 << "\"99%\":"   << snapshot.percentile_99() << "," << std::endl
+                 << "\"99.9%\":" << snapshot.percentile_999() << std::endl;
         }
 
 
-        void JsonReporter::Impl::Process(Timer& timer) {
-            auto snapshot = timer.GetSnapshot();
-            auto rate_unit = FormatRateUnit(timer.rate_unit());
-            auto duration_unit = FormatRateUnit(timer.duration_unit());
+        void JsonReporter::Impl::process(Timer& timer) {
+            auto snapshot = timer.snapshot();
+            auto rate_unit = format_rate_unit(timer.rate_unit());
+            auto duration_unit = format_rate_unit(timer.duration_unit());
             out_ << "\"type\":\"timer\"," << std::endl
                  << "\"count\":" << timer.count() << "," << std::endl
                  << "\"event_type\":\"" << timer.event_type() << "\"," << std::endl
@@ -200,12 +200,12 @@ namespace medida {
                  << "\"max\":" << timer.max() << "," << std::endl
                  << "\"mean\":" << timer.mean() << "," << std::endl
                  << "\"stddev\":" << timer.std_dev() << "," << std::endl
-                 << "\"median\":" << snapshot.getMedian() << "," << std::endl
-                 << "\"75%\":" << snapshot.get75thPercentile() << "," << std::endl
-                 << "\"95%\":" << snapshot.get95thPercentile() << "," << std::endl
-                 << "\"98%\":" << snapshot.get98thPercentile() << "," << std::endl
-                 << "\"99%\":" << snapshot.get99thPercentile() << "," << std::endl
-                 << "\"99.9%\":" << snapshot.get999thPercentile() << std::endl;
+                 << "\"median\":" << snapshot.median() << "," << std::endl
+                 << "\"75%\":"   << snapshot.percentile_75() << "," << std::endl
+                 << "\"95%\":"   << snapshot.percentile_95() << "," << std::endl
+                 << "\"98%\":"   << snapshot.percentile_98() << "," << std::endl
+                 << "\"99%\":"   << snapshot.percentile_99() << "," << std::endl
+                 << "\"99.9%\":" << snapshot.percentile_999() << std::endl;
         }
     }
 }

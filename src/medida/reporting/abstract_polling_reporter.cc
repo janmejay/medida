@@ -17,9 +17,9 @@ namespace medida {
 
             ~Impl();
 
-            void Shutdown();
+            void stop();
 
-            void Start(Clock::duration period = std::chrono::seconds(5));
+            void start(Clock::duration period = std::chrono::seconds(5));
 
         private:
             AbstractPollingReporter& self_;
@@ -28,7 +28,7 @@ namespace medida {
 
             std::thread thread_;
 
-            void Loop(Clock::duration period);
+            void loop(Clock::duration period);
         };
 
 
@@ -38,17 +38,17 @@ namespace medida {
         AbstractPollingReporter::~AbstractPollingReporter() { }
 
 
-        void AbstractPollingReporter::Shutdown() {
-            impl_->Shutdown();
+        void AbstractPollingReporter::stop() {
+            impl_->stop();
         }
 
 
-        void AbstractPollingReporter::Start(Clock::duration period) {
-            impl_->Start(period);
+        void AbstractPollingReporter::start(Clock::duration period) {
+            impl_->start(period);
         }
 
 
-        void AbstractPollingReporter::Run() { }
+        void AbstractPollingReporter::run() { }
 
 
 // === Implementation ===
@@ -60,11 +60,11 @@ namespace medida {
 
 
         AbstractPollingReporter::Impl::~Impl() {
-            Shutdown();
+            stop();
         }
 
 
-        void AbstractPollingReporter::Impl::Shutdown() {
+        void AbstractPollingReporter::Impl::stop() {
             bool expected_old_value = true;
             if (running_.compare_exchange_strong(expected_old_value, false)) {
                 thread_.join();
@@ -72,18 +72,18 @@ namespace medida {
         }
 
 
-        void AbstractPollingReporter::Impl::Start(Clock::duration period) {
+        void AbstractPollingReporter::Impl::start(Clock::duration period) {
             bool expected_old_value = false;
             if (running_.compare_exchange_strong(expected_old_value, true)) {
-                thread_ = std::thread(&AbstractPollingReporter::Impl::Loop, this, period);
+                thread_ = std::thread(&AbstractPollingReporter::Impl::loop, this, period);
             }
         }
 
 
-        void AbstractPollingReporter::Impl::Loop(Clock::duration period) {
+        void AbstractPollingReporter::Impl::loop(Clock::duration period) {
             while (running_) {
                 std::this_thread::sleep_for(period);
-                self_.Run();
+                self_.run();
             }
         }
     }

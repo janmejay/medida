@@ -16,9 +16,9 @@ namespace medida {
 
         ~Impl();
 
-        void Reset();
+        void reset();
 
-        std::chrono::nanoseconds Stop();
+        std::chrono::nanoseconds stop();
 
     private:
 
@@ -37,20 +37,20 @@ namespace medida {
 
     TimerContext::~TimerContext() { }
 
-    void TimerContext::checkImpl() const {
+    void TimerContext::check_impl() const {
         if (!impl_) {
             throw std::runtime_error("Access to moved TimerContext::impl_");
         }
     }
 
-    void TimerContext::Reset() {
-        checkImpl();
-        impl_->Reset();
+    void TimerContext::reset() {
+        check_impl();
+        impl_->reset();
     }
 
-    std::chrono::nanoseconds TimerContext::Stop() {
-        checkImpl();
-        return impl_->Stop();
+    std::chrono::nanoseconds TimerContext::stop() {
+        check_impl();
+        return impl_->stop();
     }
 
 
@@ -58,24 +58,24 @@ namespace medida {
 
 
     TimerContext::Impl::Impl(Timer& timer) : timer_ (timer) {  // FIXME: GCC Bug 50025 - Uniform initialization of reference members broken
-        Reset();
+        reset();
     }
 
 
     TimerContext::Impl::~Impl() {
-        Stop();
+        stop();
     }
 
-    void TimerContext::Impl::Reset() {
+    void TimerContext::Impl::reset() {
         start_time_ = Clock::now();
         active_ = true;
     }
 
 
-    std::chrono::nanoseconds TimerContext::Impl::Stop() {
+    std::chrono::nanoseconds TimerContext::Impl::stop() {
         if (active_) {
             auto dur = Clock::now() - start_time_;
-            timer_.Update(dur);
+            timer_.update(dur);
             active_ = false;
             return dur;
         }

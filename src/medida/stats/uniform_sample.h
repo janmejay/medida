@@ -20,13 +20,13 @@ namespace medida {
 
             ~UniformSample();
 
-            virtual void Clear();
+            virtual void clear();
 
             virtual std::uint64_t size() const;
 
-            virtual void Update(std::int64_t value);
+            virtual void update(std::int64_t value);
 
-            virtual Snapshot MakeSnapshot() const;
+            virtual Snapshot snapshot() const;
 
         private:
             class Impl;

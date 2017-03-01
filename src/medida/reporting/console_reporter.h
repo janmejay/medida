@@ -20,15 +20,15 @@ namespace medida {
 
             virtual ~ConsoleReporter();
 
-            virtual void Run();
+            virtual void run();
 
-            virtual void Process(Counter& counter);
+            virtual void process(Counter& counter);
 
-            virtual void Process(Meter& meter);
+            virtual void process(Meter& meter);
 
-            virtual void Process(Histogram& histogram);
+            virtual void process(Histogram& histogram);
 
-            virtual void Process(Timer& timer);
+            virtual void process(Timer& timer);
 
         private:
             class Impl;

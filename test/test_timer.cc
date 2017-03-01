@@ -31,7 +31,7 @@ TEST_F(TimerTest, hasRateUnit) {
 
 TEST_F(TimerTest, createFromRegistry) {
     MetricsRegistry registry {};
-    auto& timer2 = registry.NewTimer({"a", "b", "c"});
+    auto& timer2 = registry.new_timer({"a", "b", "c"});
     EXPECT_EQ(static_cast<std::uint64_t>(0), timer2.count());
 }
 
@@ -47,20 +47,20 @@ TEST_F(TimerTest, aBlankTimer) {
     EXPECT_NEAR(0.0, timer.five_minute_rate(), 0.001);
     EXPECT_NEAR(0.0, timer.fifteen_minute_rate(), 0.001);
 
-    auto snapshot = timer.GetSnapshot();
-    EXPECT_NEAR(0.0, snapshot.getMedian(), 0.001);
-    EXPECT_NEAR(0.0, snapshot.get75thPercentile(), 0.001);
-    EXPECT_NEAR(0.0, snapshot.get99thPercentile(), 0.001);
+    auto snapshot = timer.snapshot();
+    EXPECT_NEAR(0.0, snapshot.median(), 0.001);
+    EXPECT_NEAR(0.0, snapshot.percentile_75(), 0.001);
+    EXPECT_NEAR(0.0, snapshot.percentile_99(), 0.001);
     EXPECT_EQ(static_cast<std::size_t>(0), snapshot.size());
 }
 
 
 TEST_F(TimerTest, timingASeriesOfEvents) {
-    timer.Update(std::chrono::milliseconds(10));
-    timer.Update(std::chrono::milliseconds(20));
-    timer.Update(std::chrono::milliseconds(20));
-    timer.Update(std::chrono::milliseconds(30));
-    timer.Update(std::chrono::milliseconds(40));
+    timer.update(std::chrono::milliseconds(10));
+    timer.update(std::chrono::milliseconds(20));
+    timer.update(std::chrono::milliseconds(20));
+    timer.update(std::chrono::milliseconds(30));
+    timer.update(std::chrono::milliseconds(40));
 
     EXPECT_EQ(static_cast<std::uint64_t>(5), timer.count());
     EXPECT_NEAR(10.0, timer.min(), 0.001);
@@ -68,28 +68,28 @@ TEST_F(TimerTest, timingASeriesOfEvents) {
     EXPECT_NEAR(24.0, timer.mean(), 0.001);
     EXPECT_NEAR(11.401, timer.std_dev(), 0.001);
 
-    auto snapshot = timer.GetSnapshot();
-    EXPECT_NEAR(20.0, snapshot.getMedian(), 0.001);
-    EXPECT_NEAR(35.0, snapshot.get75thPercentile(), 0.001);
-    EXPECT_NEAR(40.0, snapshot.get99thPercentile(), 0.001);
+    auto snapshot = timer.snapshot();
+    EXPECT_NEAR(20.0, snapshot.median(), 0.001);
+    EXPECT_NEAR(35.0, snapshot.percentile_75(), 0.001);
+    EXPECT_NEAR(40.0, snapshot.percentile_99(), 0.001);
     EXPECT_EQ(static_cast<std::size_t>(5), snapshot.size());
 }
 
 
 TEST_F(TimerTest, timingVariantValues) {
-    timer.Update(std::chrono::nanoseconds(9223372036854775807));  // INT64_MAX
-    timer.Update(std::chrono::nanoseconds(0));
+    timer.update(std::chrono::nanoseconds(9223372036854775807));  // INT64_MAX
+    timer.update(std::chrono::nanoseconds(0));
     EXPECT_NEAR(6.521908912666392E12, timer.std_dev(), 0.001);
 }
 
 
 TEST_F(TimerTest, timerTimeScope) {
     {
-        auto t = timer.TimeScope();
+        auto t = timer.time_scope();
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
     {
-        auto t = timer.TimeScope();
+        auto t = timer.time_scope();
         std::this_thread::sleep_for(std::chrono::milliseconds(200));
     }
     EXPECT_EQ(static_cast<std::uint64_t>(2), timer.count());
@@ -103,14 +103,14 @@ void my_func() {
 
 
 TEST_F(TimerTest, timerTimeFunction) {
-    timer.Time(my_func);
+    timer.time(my_func);
     EXPECT_EQ(static_cast<std::uint64_t>(1), timer.count());
     EXPECT_NEAR(100.0, timer.mean(), 0.5);
 }
 
 
 TEST_F(TimerTest, timerTimeLambda) {
-    timer.Time([]() {
+    timer.time([]() {
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
         });
     EXPECT_EQ(static_cast<std::uint64_t>(1), timer.count());

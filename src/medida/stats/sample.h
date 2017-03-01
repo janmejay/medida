@@ -17,13 +17,13 @@ namespace medida {
         public:
             virtual ~Sample() {};
 
-            virtual void Clear() = 0;
+            virtual void clear() = 0;
 
             virtual std::uint64_t size() const = 0;
 
-            virtual void Update(std::int64_t value) = 0;
+            virtual void update(std::int64_t value) = 0;
 
-            virtual Snapshot MakeSnapshot() const = 0;
+            virtual Snapshot snapshot() const = 0;
         };
     }
 }

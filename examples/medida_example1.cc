@@ -3,26 +3,26 @@
 
 int main() {
   medida::MetricsRegistry registry;
-  auto& counter = registry.NewCounter({"counter", "bar", "baz"});
-  auto& histogram = registry.NewHistogram({"histogram", "bar", "baz"}, medida::SamplingInterface::kUniform);
-  auto &timer = registry.NewTimer({"timer", "bar", "baz"});
-  auto &meter = registry.NewMeter({"meter", "bar", "baz"}, "things");
-  auto &value = registry.NewValue({"value", "bar", "baz"});
+  auto& counter = registry.new_counter({"counter", "bar", "baz"});
+  auto& histogram = registry.new_histogram({"histogram", "bar", "baz"}, medida::SamplingInterface::kUniform);
+  auto &timer = registry.new_timer({"timer", "bar", "baz"});
+  auto &meter = registry.new_meter({"meter", "bar", "baz"}, "things");
+  auto &value = registry.new_value({"value", "bar", "baz"});
 
   medida::reporting::CollectdReporter collectdReporter(registry);
-  collectdReporter.Start(std::chrono::seconds(1));
+  collectdReporter.start(std::chrono::seconds(1));
 
   for (int i = 0; i < 10000000; ++i) {
       long ts = rand() % 556;
       counter.inc();
-      histogram.Update(ts);
-      value.Update(ts);
+      histogram.update(ts);
+      value.update(ts);
       std::this_thread::sleep_for(std::chrono::microseconds(ts));
-      meter.Mark(ts);
-      auto context = timer.TimeScope();
+      meter.mark(ts);
+      auto context = timer.time_scope();
       std::this_thread::sleep_for(std::chrono::microseconds(ts));
   }
   
-  collectdReporter.Shutdown();
+  collectdReporter.stop();
   return 0;
 }

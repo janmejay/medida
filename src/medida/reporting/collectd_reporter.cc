@@ -50,17 +50,17 @@ namespace medida {
 
             ~Impl();
 
-            void Run();
+            void run();
 
-            void Process(Counter& counter);
+            void process(Counter& counter);
 
-            void Process(Meter& meter);
+            void process(Meter& meter);
 
-            void Process(Histogram& histogram);
+            void process(Histogram& histogram);
 
-            void Process(Value& value);
+            void process(Value& value);
 
-            void Process(Timer& timer);
+            void process(Timer& timer);
 
         private:
             enum PartType {
@@ -108,11 +108,11 @@ namespace medida {
 
             std::string current_instance_;
 
-            void AddPart(PartType type, std::uint64_t number);
+            void add_part(PartType type, std::uint64_t number);
 
-            void AddPart(PartType type, const std::string& text);
+            void add_part(PartType type, const std::string& text);
 
-            void AddValues(std::initializer_list<TypeValue> values);
+            void add_values(std::initializer_list<TypeValue> values);
 
             inline void pack8(std::uint8_t data);
 
@@ -134,32 +134,32 @@ namespace medida {
         CollectdReporter::~CollectdReporter() { }
 
 
-        void CollectdReporter::Run() {
-            impl_->Run();
+        void CollectdReporter::run() {
+            impl_->run();
         }
 
 
-        void CollectdReporter::Process(Counter& counter) {
-            impl_->Process(counter);
+        void CollectdReporter::process(Counter& counter) {
+            impl_->process(counter);
         }
 
 
-        void CollectdReporter::Process(Meter& meter) {
-            impl_->Process(meter);
+        void CollectdReporter::process(Meter& meter) {
+            impl_->process(meter);
         }
 
 
-        void CollectdReporter::Process(Histogram& histogram) {
-            impl_->Process(histogram);
+        void CollectdReporter::process(Histogram& histogram) {
+            impl_->process(histogram);
         }
 
 
-        void CollectdReporter::Process(Value& value) {
-            impl_->Process(value);
+        void CollectdReporter::process(Value& value) {
+            impl_->process(value);
         }
 
-        void CollectdReporter::Process(Timer& timer) {
-            impl_->Process(timer);
+        void CollectdReporter::process(Timer& timer) {
+            impl_->process(timer);
         }
 
 
@@ -190,9 +190,9 @@ namespace medida {
         }
 
 
-        void CollectdReporter::Impl::Run() {
+        void CollectdReporter::Impl::run() {
             std::lock_guard<std::mutex> lock {mutex_};
-            for (auto& kv : registry_.GetAllMetrics()) {
+            for (auto& kv : registry_.get_all_metrics()) {
                 auto name = kv.first;
                 auto metric = kv.second;
                 auto scope = name.scope();
@@ -202,10 +202,10 @@ namespace medida {
                 msgbuf_ptr_ = &msgbuf_[0];
 
                 // Add message parts
-                AddPart(kTime, std::time(0));
-                AddPart(kHost, uname_);
-                AddPart(kPlugin, name.domain() + "." + name.type());
-                metric->Process(self_);
+                add_part(kTime, std::time(0));
+                add_part(kHost, uname_);
+                add_part(kPlugin, name.domain() + "." + name.type());
+                metric->process(self_);
 
                 // Send message
                 auto msg_size = msgbuf_ptr_ - msgbuf_;
@@ -214,21 +214,21 @@ namespace medida {
         }
 
 
-        void CollectdReporter::Impl::Process(Counter& counter) {
+        void CollectdReporter::Impl::process(Counter& counter) {
             double count = counter.count();
-            AddPart(kType, "medida_counter");
-            AddPart(kTypeInstance, current_instance_ + ".count");
-            AddValues({{kGauge, count}});
+            add_part(kType, "medida_counter");
+            add_part(kTypeInstance, current_instance_ + ".count");
+            add_values({{kGauge, count}});
         }
 
 
-        void CollectdReporter::Impl::Process(Meter& meter) {
+        void CollectdReporter::Impl::process(Meter& meter) {
             auto event_type = meter.event_type();
-            auto unit = FormatRateUnit(meter.rate_unit());
+            auto unit = format_rate_unit(meter.rate_unit());
             double count = meter.count();
-            AddPart(kType, "medida_meter");
-            AddPart(kTypeInstance, current_instance_ + "." + event_type +"_per_" + unit);
-            AddValues({
+            add_part(kType, "medida_meter");
+            add_part(kTypeInstance, current_instance_ + "." + event_type +"_per_" + unit);
+            add_values({
                     {kGauge, count},
                     {kGauge, meter.mean_rate()},
                     {kGauge, meter.one_minute_rate()},
@@ -238,57 +238,57 @@ namespace medida {
         }
 
 
-        void CollectdReporter::Impl::Process(Histogram& histogram) {
-            auto snapshot = histogram.GetSnapshot();
-            AddPart(kType, "medida_histogram");
-            AddPart(kTypeInstance, current_instance_);
-            AddValues({
+        void CollectdReporter::Impl::process(Histogram& histogram) {
+            auto snapshot = histogram.snapshot();
+            add_part(kType, "medida_histogram");
+            add_part(kTypeInstance, current_instance_);
+            add_values({
                     {kGauge, histogram.min()},
                     {kGauge, histogram.max()},
                     {kGauge, histogram.mean()},
                     {kGauge, histogram.std_dev()},
-                    {kGauge, snapshot.getMedian()},
-                    {kGauge, snapshot.get75thPercentile()},
-                    {kGauge, snapshot.get95thPercentile()},
-                    {kGauge, snapshot.get98thPercentile()},
-                    {kGauge, snapshot.get99thPercentile()},
-                    {kGauge, snapshot.get999thPercentile()},
+                    {kGauge, snapshot.median()},
+                    {kGauge, snapshot.percentile_75()},
+                    {kGauge, snapshot.percentile_95()},
+                    {kGauge, snapshot.percentile_98()},
+                    {kGauge, snapshot.percentile_99()},
+                    {kGauge, snapshot.percentile_999()},
                         });
         }
 
-        void CollectdReporter::Impl::Process(Value& value) {
+        void CollectdReporter::Impl::process(Value& value) {
             double val = value.value();
-            AddPart(kType, "medida_value");
-            AddPart(kTypeInstance, current_instance_);
-            AddValues({{kGauge, val}});
+            add_part(kType, "medida_value");
+            add_part(kTypeInstance, current_instance_);
+            add_values({{kGauge, val}});
         }
 
-        void CollectdReporter::Impl::Process(Timer& timer) {
-            auto snapshot = timer.GetSnapshot();
-            AddPart(kType, "medida_timer");
-            AddPart(kTypeInstance, current_instance_ + "." + FormatRateUnit(timer.duration_unit()));
-            AddValues({
+        void CollectdReporter::Impl::process(Timer& timer) {
+            auto snapshot = timer.snapshot();
+            add_part(kType, "medida_timer");
+            add_part(kTypeInstance, current_instance_ + "." + format_rate_unit(timer.duration_unit()));
+            add_values({
                     {kGauge, timer.min()},
                     {kGauge, timer.max()},
                     {kGauge, timer.mean()},
                     {kGauge, timer.std_dev()},
-                    {kGauge, snapshot.getMedian()},
-                    {kGauge, snapshot.get75thPercentile()},
-                    {kGauge, snapshot.get95thPercentile()},
-                    {kGauge, snapshot.get98thPercentile()},
-                    {kGauge, snapshot.get99thPercentile()},
-                    {kGauge, snapshot.get999thPercentile()},
+                    {kGauge, snapshot.median()},
+                    {kGauge, snapshot.percentile_75()},
+                    {kGauge, snapshot.percentile_95()},
+                    {kGauge, snapshot.percentile_98()},
+                    {kGauge, snapshot.percentile_99()},
+                    {kGauge, snapshot.percentile_999()},
                         });
         }
 
-        void CollectdReporter::Impl::AddPart(PartType type, std::uint64_t number) {
+        void CollectdReporter::Impl::add_part(PartType type, std::uint64_t number) {
             pack16(type);
             pack16(12);
             pack64(number);
         }
 
 
-        void CollectdReporter::Impl::AddPart(PartType type, const std::string& text) {
+        void CollectdReporter::Impl::add_part(PartType type, const std::string& text) {
             auto len = text.size() + 1;
             pack16(type);
             pack16(len + 4);
@@ -297,7 +297,7 @@ namespace medida {
         }
 
 
-        void CollectdReporter::Impl::AddValues(std::initializer_list<TypeValue> values) {
+        void CollectdReporter::Impl::add_values(std::initializer_list<TypeValue> values) {
             auto count = values.size();
             pack16(PartType::kValues);
             pack16(6 + count * 9); // 48 bit header, 8 + 64 bits per value

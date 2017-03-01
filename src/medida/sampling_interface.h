@@ -15,7 +15,7 @@ namespace medida {
 
         virtual ~SamplingInterface() {};
 
-        virtual stats::Snapshot GetSnapshot() const = 0;
+        virtual stats::Snapshot snapshot() const = 0;
     };
 }
 

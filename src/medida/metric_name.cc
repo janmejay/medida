@@ -22,7 +22,7 @@ namespace medida {
 
         const std::string& scope() const;
 
-        const std::string& ToString() const;
+        const std::string& to_string() const;
 
         bool has_scope() const;
 
@@ -78,8 +78,8 @@ namespace medida {
     }
 
 
-    const std::string& MetricName::ToString() const {
-        return impl_->ToString();
+    const std::string& MetricName::to_string() const {
+        return impl_->to_string();
     }
 
 
@@ -153,7 +153,7 @@ namespace medida {
     }
 
 
-    const std::string& MetricName::Impl::ToString() const {
+    const std::string& MetricName::Impl::to_string() const {
         return repr_;
     }
 

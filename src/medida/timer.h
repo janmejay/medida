@@ -25,7 +25,7 @@ namespace medida {
 
         ~Timer();
 
-        void Process(MetricProcessor& processor);
+        void process(MetricProcessor& processor);
 
         virtual std::chrono::nanoseconds rate_unit() const;
 
@@ -41,7 +41,7 @@ namespace medida {
 
         virtual double mean_rate();
 
-        virtual stats::Snapshot GetSnapshot() const;
+        virtual stats::Snapshot snapshot() const;
 
         virtual double max() const;
 
@@ -55,13 +55,13 @@ namespace medida {
 
         std::chrono::nanoseconds duration_unit() const;
 
-        void Clear();
+        void clear();
 
-        void Update(std::chrono::nanoseconds duration);
+        void update(std::chrono::nanoseconds duration);
 
-        TimerContext TimeScope();
+        TimerContext time_scope();
 
-        void Time(std::function<void()>);
+        void time(std::function<void()>);
 
     private:
         class Impl;

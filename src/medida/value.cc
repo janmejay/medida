@@ -12,8 +12,8 @@ namespace medida {
     Value::~Value() {
     }
 
-    void Value::Process(MetricProcessor &processor) {
-        processor.Process(*this);
+    void Value::process(MetricProcessor &processor) {
+        processor.process(*this);
     }
 
     void Value::clear() {
@@ -24,7 +24,7 @@ namespace medida {
         return value_;
     }
 
-    void Value::Update(std::int64_t value) {
+    void Value::update(std::int64_t value) {
         value_.store(value);
     }
 }

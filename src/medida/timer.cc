@@ -18,7 +18,7 @@ namespace medida {
 
         ~Impl();
 
-        void Process(MetricProcessor& processor);
+        void process(MetricProcessor& processor);
 
         std::chrono::nanoseconds rate_unit() const;
 
@@ -34,7 +34,7 @@ namespace medida {
 
         double mean_rate();
 
-        stats::Snapshot GetSnapshot() const;
+        stats::Snapshot snapshot() const;
 
         double max() const;
 
@@ -48,13 +48,13 @@ namespace medida {
 
         std::chrono::nanoseconds duration_unit() const;
 
-        void Clear();
+        void clear();
 
-        void Update(std::chrono::nanoseconds duration);
+        void update(std::chrono::nanoseconds duration);
 
-        TimerContext TimeScope();
+        TimerContext time_scope();
 
-        void Time(std::function<void()>);
+        void time(std::function<void()>);
 
     private:
         Timer& self_;
@@ -143,34 +143,33 @@ namespace medida {
     }
 
 
-    void Timer::Process(MetricProcessor& processor) {
-        return impl_->Process(processor);
-        processor.Process(*this);  // FIXME: pimpl?
+    void Timer::process(MetricProcessor& processor) {
+        return impl_->process(processor);
     }
 
 
-    void Timer::Clear() {
-        impl_->Clear();
+    void Timer::clear() {
+        impl_->clear();
     }
 
 
-    void Timer::Update(std::chrono::nanoseconds duration) {
-        impl_->Update(duration);
+    void Timer::update(std::chrono::nanoseconds duration) {
+        impl_->update(duration);
     }
 
 
-    stats::Snapshot Timer::GetSnapshot() const {
-        return impl_->GetSnapshot();
+    stats::Snapshot Timer::snapshot() const {
+        return impl_->snapshot();
     }
 
 
-    TimerContext Timer::TimeScope() {
-        return impl_->TimeScope();
+    TimerContext Timer::time_scope() {
+        return impl_->time_scope();
     }
 
 
-    void Timer::Time(std::function<void()> func) {
-        impl_->Time(func);
+    void Timer::time(std::function<void()> func) {
+        impl_->time(func);
     }
 
 
@@ -258,27 +257,27 @@ namespace medida {
     }
 
 
-    void Timer::Impl::Process(MetricProcessor& processor) {
-        processor.Process(self_);
+    void Timer::Impl::process(MetricProcessor& processor) {
+        processor.process(self_);
     }
 
 
-    void Timer::Impl::Clear() {
-        histogram_.Clear();
+    void Timer::Impl::clear() {
+        histogram_.clear();
     }
 
 
-    void Timer::Impl::Update(std::chrono::nanoseconds duration) {
+    void Timer::Impl::update(std::chrono::nanoseconds duration) {
         auto count = duration.count();
         if (count >= 0) {
-            histogram_.Update(count);
-            meter_.Mark();
+            histogram_.update(count);
+            meter_.mark();
         }
     }
 
 
-    stats::Snapshot Timer::Impl::GetSnapshot() const {
-        auto values = histogram_.GetSnapshot().getValues();
+    stats::Snapshot Timer::Impl::snapshot() const {
+        auto values = histogram_.snapshot().values();
         std::vector<double> converted;
         converted.reserve(values.size());
         for (auto& v : values) {//TODO: it may be worth pushing down this rebase (because additional snapshot-creation in this case can be avoided)
@@ -288,13 +287,13 @@ namespace medida {
     }
 
 
-    void Timer::Impl::Time(std::function<void()> func) {
-        auto t = self_.TimeScope();
+    void Timer::Impl::time(std::function<void()> func) {
+        auto t = self_.time_scope();
         func();
     }
 
 
-    TimerContext Timer::Impl::TimeScope() {
+    TimerContext Timer::Impl::time_scope() {
         return {self_};
     }
 }

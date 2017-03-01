@@ -22,7 +22,7 @@ namespace medida {
 
         ~Impl();
 
-        stats::Snapshot GetSnapshot() const;
+        stats::Snapshot snapshot() const;
 
         double sum() const;
 
@@ -34,15 +34,15 @@ namespace medida {
 
         double std_dev() const;
 
-        void Update(std::int64_t value);
+        void update(std::int64_t value);
 
         std::uint64_t count() const;
 
         double variance() const;
 
-        void Process(MetricProcessor& processor);
+        void process(MetricProcessor& processor);
 
-        void Clear();
+        void clear();
 
     private:
         static const std::uint64_t kDefaultSampleSize = 1028;
@@ -71,13 +71,13 @@ namespace medida {
     Histogram::~Histogram() { }
 
 
-    void Histogram::Process(MetricProcessor& processor) {
-        processor.Process(*this);  // FIXME: pimpl?
+    void Histogram::process(MetricProcessor& processor) {
+        processor.process(*this);  // FIXME: pimpl?
     }
 
 
-    void Histogram::Clear() {
-        impl_->Clear();
+    void Histogram::clear() {
+        impl_->clear();
     }
 
 
@@ -111,12 +111,12 @@ namespace medida {
     }
 
 
-    void Histogram::Update(std::int64_t value) {
-        impl_->Update(value);
+    void Histogram::update(std::int64_t value) {
+        impl_->update(value);
     }
 
-    stats::Snapshot Histogram::GetSnapshot() const {
-        return impl_->GetSnapshot();
+    stats::Snapshot Histogram::snapshot() const {
+        return impl_->snapshot();
     }
 
     double Histogram::variance() const {
@@ -135,21 +135,21 @@ namespace medida {
         } else {
             throw std::invalid_argument("invalid sample_type");
         }
-        Clear();
+        clear();
     }
 
 
     Histogram::Impl::~Impl() { }
 
 
-    void Histogram::Impl::Clear() {
+    void Histogram::Impl::clear() {
         min_ = 0;
         max_ = 0;
         sum_ = 0;
         count_ = 0;
         variance_m_ = 0.0;
         variance_s_ = 0.0;
-        sample_->Clear();
+        sample_->clear();
     }
 
 
@@ -206,13 +206,13 @@ namespace medida {
     }
 
 
-    stats::Snapshot Histogram::Impl::GetSnapshot() const {
-        return sample_->MakeSnapshot();
+    stats::Snapshot Histogram::Impl::snapshot() const {
+        return sample_->snapshot();
     }
 
 
-    void Histogram::Impl::Update(std::int64_t value) {
-        sample_->Update(value);
+    void Histogram::Impl::update(std::int64_t value) {
+        sample_->update(value);
         auto cur_max = max_.load();
         auto cur_min = min_.load();
         while (((count_ == 0) || (cur_max < value)) &&

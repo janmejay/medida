@@ -20,13 +20,13 @@ namespace medida {
 
             ~Impl();
 
-            void Clear();
+            void clear();
 
             std::uint64_t size() const;
 
-            void Update(std::int64_t value);
+            void update(std::int64_t value);
 
-            Snapshot MakeSnapshot() const;
+            Snapshot snapshot() const;
 
         private:
             std::atomic<std::uint64_t> count_;
@@ -45,8 +45,8 @@ namespace medida {
         UniformSample::~UniformSample() { }
 
 
-        void UniformSample::Clear() {
-            impl_->Clear();
+        void UniformSample::clear() {
+            impl_->clear();
         }
 
 
@@ -55,13 +55,13 @@ namespace medida {
         }
 
 
-        void UniformSample::Update(std::int64_t value) {
-            impl_->Update(value);
+        void UniformSample::update(std::int64_t value) {
+            impl_->update(value);
         }
 
 
-        Snapshot UniformSample::MakeSnapshot() const {
-            return impl_->MakeSnapshot();
+        Snapshot UniformSample::snapshot() const {
+            return impl_->snapshot();
         }
 
 
@@ -73,14 +73,14 @@ namespace medida {
               values_         (reservoirSize), // FIXME: Explicit and non-uniform
               rng_            {std::random_device()()},
               mutex_          {} {
-                  Clear();
+                  clear();
               }
 
 
         UniformSample::Impl::~Impl() { }
 
 
-        void UniformSample::Impl::Clear() {
+        void UniformSample::Impl::clear() {
             std::lock_guard<std::mutex> lock {mutex_};
             for (auto& v : values_) {
                 v = 0;
@@ -97,7 +97,7 @@ namespace medida {
         }
 
 
-        void UniformSample::Impl::Update(std::int64_t value) {
+        void UniformSample::Impl::update(std::int64_t value) {
             auto count = count_.fetch_add(1, std::memory_order_relaxed);
             std::lock_guard<std::mutex> lock {mutex_};
             auto size = values_.size();
@@ -113,7 +113,7 @@ namespace medida {
         }
 
 
-        Snapshot UniformSample::Impl::MakeSnapshot() const {
+        Snapshot UniformSample::Impl::snapshot() const {
             std::uint64_t count = count_.load(std::memory_order_relaxed);
             std::lock_guard<std::mutex> lock {mutex_};
             std::uint64_t size = values_.size();

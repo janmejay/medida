@@ -21,7 +21,7 @@ namespace medida {
 
         ~Histogram();
 
-        virtual stats::Snapshot GetSnapshot() const;
+        virtual stats::Snapshot snapshot() const;
 
         virtual double sum() const;
 
@@ -33,15 +33,15 @@ namespace medida {
 
         virtual double std_dev() const;
 
-        void Update(std::int64_t value);
+        void update(std::int64_t value);
 
         std::uint64_t count() const;
 
         double variance() const;
 
-        void Process(MetricProcessor& processor);
+        void process(MetricProcessor& processor);
 
-        void Clear();
+        void clear();
 
     private:
         class Impl;

@@ -18,13 +18,13 @@ namespace medida {
 
             virtual ~AbstractPollingReporter();
 
-            virtual void Shutdown();
+            virtual void stop();
 
             // start should never be called after calling shutdown on this class
             //    (behavior if start after shutdown is undefined).
-            virtual void Start(Clock::duration period = std::chrono::seconds(5));
+            virtual void start(Clock::duration period = std::chrono::seconds(5));
 
-            virtual void Run();
+            virtual void run();
 
         private:
             class Impl;

@@ -32,9 +32,9 @@ namespace medida {
 
         double mean_rate();
 
-        void Mark(std::uint64_t n = 1);
+        void mark(std::uint64_t n = 1);
 
-        void Process(MetricProcessor& processor);
+        void process(MetricProcessor& processor);
 
     private:
         const std::string event_type_;
@@ -55,7 +55,7 @@ namespace medida {
 
         mutable std::mutex mutex_;
 
-        void TickIfNecessary();
+        void tick_if_necessary();
     };
 
 
@@ -100,13 +100,13 @@ namespace medida {
     }
 
 
-    void Meter::Mark(std::uint64_t n) {
-        impl_->Mark(n);
+    void Meter::mark(std::uint64_t n) {
+        impl_->mark(n);
     }
 
 
-    void Meter::Process(MetricProcessor& processor) {
-        processor.Process(*this);  // FIXME: pimpl?
+    void Meter::process(MetricProcessor& processor) {
+        processor.process(*this);  // FIXME: pimpl?
     }
 
 
@@ -119,9 +119,9 @@ namespace medida {
           count_      (0),
           start_time_ (Clock::now()),
           last_tick_  (std::chrono::duration_cast<std::chrono::nanoseconds>(start_time_.time_since_epoch()).count()),
-          m1_rate_    (stats::EWMA::oneMinuteEWMA()),
-          m5_rate_    (stats::EWMA::fiveMinuteEWMA()),
-          m15_rate_   (stats::EWMA::fifteenMinuteEWMA()),
+          m1_rate_    (stats::EWMA::one_minute_ewma()),
+          m5_rate_    (stats::EWMA::five_minute_ewma()),
+          m15_rate_   (stats::EWMA::fifteen_minute_ewma()),
           mutex_      {} { }
 
 
@@ -145,22 +145,22 @@ namespace medida {
 
     double Meter::Impl::fifteen_minute_rate() {
         std::lock_guard<std::mutex> lock {mutex_};
-        TickIfNecessary();
-        return m15_rate_.getRate();
+        tick_if_necessary();
+        return m15_rate_.rate();
     }
 
 
     double Meter::Impl::five_minute_rate() {
         std::lock_guard<std::mutex> lock {mutex_};
-        TickIfNecessary();
-        return m5_rate_.getRate();
+        tick_if_necessary();
+        return m5_rate_.rate();
     }
 
 
     double Meter::Impl::one_minute_rate() {
         std::lock_guard<std::mutex> lock {mutex_};
-        TickIfNecessary();
-        return m1_rate_.getRate();
+        tick_if_necessary();
+        return m1_rate_.rate();
     }
 
 
@@ -174,9 +174,9 @@ namespace medida {
     }
 
 
-    void Meter::Impl::Mark(std::uint64_t n) {
+    void Meter::Impl::mark(std::uint64_t n) {
         std::lock_guard<std::mutex> lock {mutex_};
-        TickIfNecessary();
+        tick_if_necessary();
         count_ += n;
         m1_rate_.update(n);
         m5_rate_.update(n);
@@ -185,7 +185,7 @@ namespace medida {
 
 
     //must always be called after acquiring exclusive lock
-    void Meter::Impl::TickIfNecessary() {
+    void Meter::Impl::tick_if_necessary() {
         auto old_tick = last_tick_.load();
         auto new_tick = std::chrono::duration_cast<std::chrono::nanoseconds>(Clock::now().time_since_epoch()).count();
         auto age = new_tick - old_tick;

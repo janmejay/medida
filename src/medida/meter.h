@@ -37,9 +37,9 @@ namespace medida {
 
         virtual double mean_rate();
 
-        void Mark(std::uint64_t n = 1);
+        void mark(std::uint64_t n = 1);
 
-        void Process(MetricProcessor& processor);
+        void process(MetricProcessor& processor);
 
     private:
         class Impl;

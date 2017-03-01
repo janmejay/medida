@@ -20,15 +20,15 @@ namespace medida {
 
             ~Impl();
 
-            void Run();
+            void run();
 
-            void Process(Counter& counter);
+            void process(Counter& counter);
 
-            void Process(Meter& meter);
+            void process(Meter& meter);
 
-            void Process(Histogram& histogram);
+            void process(Histogram& histogram);
 
-            void Process(Timer& timer);
+            void process(Timer& timer);
 
         private:
             ConsoleReporter& self_;
@@ -47,28 +47,28 @@ namespace medida {
         ConsoleReporter::~ConsoleReporter() { }
 
 
-        void ConsoleReporter::Run() {
-            impl_->Run();
+        void ConsoleReporter::run() {
+            impl_->run();
         }
 
 
-        void ConsoleReporter::Process(Counter& counter) {
-            impl_->Process(counter);
+        void ConsoleReporter::process(Counter& counter) {
+            impl_->process(counter);
         }
 
 
-        void ConsoleReporter::Process(Meter& meter) {
-            impl_->Process(meter);
+        void ConsoleReporter::process(Meter& meter) {
+            impl_->process(meter);
         }
 
 
-        void ConsoleReporter::Process(Histogram& histogram) {
-            impl_->Process(histogram);
+        void ConsoleReporter::process(Histogram& histogram) {
+            impl_->process(histogram);
         }
 
 
-        void ConsoleReporter::Process(Timer& timer) {
-            impl_->Process(timer);
+        void ConsoleReporter::process(Timer& timer) {
+            impl_->process(timer);
         }
 
 
@@ -84,25 +84,25 @@ namespace medida {
         ConsoleReporter::Impl::~Impl() { }
 
 
-        void ConsoleReporter::Impl::Run() {
-            for (auto& kv : registry_.GetAllMetrics()) {
+        void ConsoleReporter::Impl::run() {
+            for (auto& kv : registry_.get_all_metrics()) {
                 auto name = kv.first;
                 auto metric = kv.second;
-                out_ << name.ToString() << ":" << std::endl;
-                metric->Process(self_);
+                out_ << name.to_string() << ":" << std::endl;
+                metric->process(self_);
             }
             out_ << std::endl;
         }
 
 
-        void ConsoleReporter::Impl::Process(Counter& counter) {
+        void ConsoleReporter::Impl::process(Counter& counter) {
             out_ << "  count = " << counter.count() << std::endl;
         }
 
 
-        void ConsoleReporter::Impl::Process(Meter& meter) {
+        void ConsoleReporter::Impl::process(Meter& meter) {
             auto event_type = meter.event_type();
-            auto unit = FormatRateUnit(meter.rate_unit());
+            auto unit = format_rate_unit(meter.rate_unit());
             out_ << "           count = " << meter.count() << std::endl
                  << "       mean rate = " << meter.mean_rate() << " " << event_type << "/" << unit << std::endl
                  << "   1-minute rate = " << meter.one_minute_rate() << " " << event_type << "/" << unit << std::endl
@@ -111,25 +111,25 @@ namespace medida {
         }
 
 
-        void ConsoleReporter::Impl::Process(Histogram& histogram) {
-            auto snapshot = histogram.GetSnapshot();
+        void ConsoleReporter::Impl::process(Histogram& histogram) {
+            auto snapshot = histogram.snapshot();
             out_ << "             min = " << histogram.min() << std::endl
                  << "             max = " << histogram.max() << std::endl
                  << "            mean = " << histogram.mean() << std::endl
                  << "          stddev = " << histogram.std_dev() << std::endl
-                 << "          median = " << snapshot.getMedian() << std::endl
-                 << "             75% = " << snapshot.get75thPercentile() << std::endl
-                 << "             95% = " << snapshot.get95thPercentile() << std::endl
-                 << "             98% = " << snapshot.get98thPercentile() << std::endl
-                 << "             99% = " << snapshot.get99thPercentile() << std::endl
-                 << "           99.9% = " << snapshot.get999thPercentile() << std::endl;
+                 << "          median = " << snapshot.median() << std::endl
+                 << "             75% = " << snapshot.percentile_75() << std::endl
+                 << "             95% = " << snapshot.percentile_95() << std::endl
+                 << "             98% = " << snapshot.percentile_98() << std::endl
+                 << "             99% = " << snapshot.percentile_99() << std::endl
+                 << "           99.9% = " << snapshot.percentile_999() << std::endl;
         }
 
 
-        void ConsoleReporter::Impl::Process(Timer& timer) {
-            auto snapshot = timer.GetSnapshot();
+        void ConsoleReporter::Impl::process(Timer& timer) {
+            auto snapshot = timer.snapshot();
             auto event_type = timer.event_type();
-            auto unit = FormatRateUnit(timer.duration_unit());
+            auto unit = format_rate_unit(timer.duration_unit());
             out_ << "           count = " << timer.count() << std::endl
                  << "       mean rate = " << timer.mean_rate() << " " << event_type << "/" << unit << std::endl
                  << "   1-minute rate = " << timer.one_minute_rate() << " " << event_type << "/" << unit << std::endl
@@ -139,12 +139,12 @@ namespace medida {
                  << "             max = " << timer.max() << unit << std::endl
                  << "            mean = " << timer.mean() << unit << std::endl
                  << "          stddev = " << timer.std_dev() << unit << std::endl
-                 << "          median = " << snapshot.getMedian() << unit << std::endl
-                 << "             75% = " << snapshot.get75thPercentile() << unit << std::endl
-                 << "             95% = " << snapshot.get95thPercentile() << unit << std::endl
-                 << "             98% = " << snapshot.get98thPercentile() << unit << std::endl
-                 << "             99% = " << snapshot.get99thPercentile() << unit << std::endl
-                 << "           99.9% = " << snapshot.get999thPercentile() << unit << std::endl;
+                 << "          median = " << snapshot.median() << unit << std::endl
+                 << "             75% = " << snapshot.percentile_75() << unit << std::endl
+                 << "             95% = " << snapshot.percentile_95() << unit << std::endl
+                 << "             98% = " << snapshot.percentile_98() << unit << std::endl
+                 << "             99% = " << snapshot.percentile_99() << unit << std::endl
+                 << "           99.9% = " << snapshot.percentile_999() << unit << std::endl;
         }
     }
 }

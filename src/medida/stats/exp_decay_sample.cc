@@ -27,15 +27,15 @@ namespace medida {
 
             ~Impl();
 
-            void Clear();
+            void clear();
 
             std::uint64_t size() const;
 
-            void Update(std::int64_t value);
+            void update(std::int64_t value);
 
-            void Update(std::int64_t value, Clock::time_point timestamp);
+            void update(std::int64_t value, Clock::time_point timestamp);
 
-            Snapshot MakeSnapshot() const;
+            Snapshot snapshot() const;
 
         private:
             const double alpha_;
@@ -57,7 +57,7 @@ namespace medida {
 
             std::uniform_real_distribution<> dist_;
 
-            void Rescale(const Clock::time_point& when);
+            void rescale(const Clock::time_point& when);
         };
 
 
@@ -67,8 +67,8 @@ namespace medida {
         ExpDecaySample::~ExpDecaySample() { }
 
 
-        void ExpDecaySample::Clear() {
-            impl_->Clear();
+        void ExpDecaySample::clear() {
+            impl_->clear();
         }
 
 
@@ -77,18 +77,18 @@ namespace medida {
         }
 
 
-        void ExpDecaySample::Update(std::int64_t value) {
-            impl_->Update(value);
+        void ExpDecaySample::update(std::int64_t value) {
+            impl_->update(value);
         }
 
 
-        void ExpDecaySample::Update(std::int64_t value, Clock::time_point timestamp) {
-            impl_->Update(value, timestamp);
+        void ExpDecaySample::update(std::int64_t value, Clock::time_point timestamp) {
+            impl_->update(value, timestamp);
         }
 
 
-        Snapshot ExpDecaySample::MakeSnapshot() const {
-            return impl_->MakeSnapshot();
+        Snapshot ExpDecaySample::snapshot() const {
+            return impl_->snapshot();
         }
 
 
@@ -101,14 +101,14 @@ namespace medida {
               count_         {},
               rng_           {std::random_device()()},
               dist_          (0, 1) {
-                  Clear();
+                  clear();
               }
 
 
         ExpDecaySample::Impl::~Impl() { }
 
 
-        void ExpDecaySample::Impl::Clear() {
+        void ExpDecaySample::Impl::clear() {
             std::lock_guard<std::mutex> lock {mutex_};
             values_.clear();
             count_ = 0;
@@ -122,14 +122,14 @@ namespace medida {
         }
 
 
-        void ExpDecaySample::Impl::Update(std::int64_t value) {
-            Update(value, Clock::now());
+        void ExpDecaySample::Impl::update(std::int64_t value) {
+            update(value, Clock::now());
         }
 
 
-        void ExpDecaySample::Impl::Update(std::int64_t value, Clock::time_point timestamp) {
+        void ExpDecaySample::Impl::update(std::int64_t value, Clock::time_point timestamp) {
             if (timestamp >= nextScaleTime_) {
-                Rescale(timestamp);
+                rescale(timestamp);
             }
             std::lock_guard<std::mutex> lock {mutex_};
             auto dur = std::chrono::duration_cast<std::chrono::seconds>(timestamp - startTime_);
@@ -149,7 +149,7 @@ namespace medida {
         }
 
 
-        void ExpDecaySample::Impl::Rescale(const Clock::time_point& when) {
+        void ExpDecaySample::Impl::rescale(const Clock::time_point& when) {
             std::lock_guard<std::mutex> lock {mutex_};
             nextScaleTime_ = when + kRESCALE_THRESHOLD;
             auto oldStartTime = startTime_;
@@ -177,7 +177,7 @@ namespace medida {
         }
 
 
-        Snapshot ExpDecaySample::Impl::MakeSnapshot() const {
+        Snapshot ExpDecaySample::Impl::snapshot() const {
             std::vector<double> vals;
             vals.reserve(values_.size());
             for (auto& kv : values_) {

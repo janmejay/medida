@@ -13,7 +13,7 @@ namespace medida {
     public:
         virtual ~MetricInterface() {};
 
-        virtual void Process(MetricProcessor& processor) = 0;
+        virtual void process(MetricProcessor& processor) = 0;
     };
 }
 

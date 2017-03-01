@@ -29,14 +29,14 @@ namespace medida {
 
         ~TimerContext();
 
-        void Reset();
+        void reset();
 
-        std::chrono::nanoseconds Stop();
+        std::chrono::nanoseconds stop();
 
     private:
         class Impl;
 
-        void checkImpl() const;
+        void check_impl() const;
 
         std::unique_ptr<Impl> impl_;
     };

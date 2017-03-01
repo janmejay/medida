@@ -20,11 +20,11 @@ namespace medida {
 
         ~Value();
 
-        void Update(std::int64_t value);
+        void update(std::int64_t value);
 
         std::int64_t value() const;
 
-        void Process(MetricProcessor &processor);
+        void process(MetricProcessor &processor);
 
         void clear();
 

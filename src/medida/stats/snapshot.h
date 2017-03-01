@@ -25,26 +25,26 @@ namespace medida {
 
             std::size_t size() const;
 
-            double getValue(double quantile) const;
+            double quantile(double fraction) const;
 
-            double getMedian() const;
+            double median() const;
 
-            double get75thPercentile() const;
+            double percentile_75() const;
 
-            double get95thPercentile() const;
+            double percentile_95() const;
 
-            double get98thPercentile() const;
+            double percentile_98() const;
 
-            double get99thPercentile() const;
+            double percentile_99() const;
 
-            double get999thPercentile() const;
+            double percentile_999() const;
 
-            std::vector<double> getValues() const;
+            const std::vector<double>& values() const;
 
         private:
             class Impl;
 
-            void checkImpl() const;
+            void check_impl() const;
 
             std::unique_ptr<Impl> impl_;
         };
