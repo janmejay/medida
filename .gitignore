@@ -40,3 +40,4 @@ TAGS
 Testing
 *.cmake
 CMakeFiles
+install_manifest.txt
