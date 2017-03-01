@@ -11,7 +11,7 @@
 namespace medida {
     namespace reporting {
 
-        std::string FormatRateUnit(const std::chrono::nanoseconds& rate_unit);
+        const std::string& FormatRateUnit(const std::chrono::nanoseconds& rate_unit);
 
     }
 }

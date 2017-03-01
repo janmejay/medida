@@ -16,23 +16,31 @@ namespace medida {
             NS_PER_HOUR =     60 * NS_PER_MIN,
             NS_PER_DAY =      24 * NS_PER_HOUR;
 
+        static const std::string DAY = "d",
+            HOUR = "h",
+            MINUTE = "m",
+            SECOND = "s",
+            MILLI_SECOND = "ms",
+            MICRO_SECOND = "us",
+            NANO_SECOND = "ns";
 
-        std::string FormatRateUnit(const std::chrono::nanoseconds& rate_unit) {
+
+        const std::string& FormatRateUnit(const std::chrono::nanoseconds& rate_unit) {
             auto nanosecs = rate_unit.count();
             if (nanosecs >= NS_PER_DAY) {
-                return "d";
+                return DAY;
             } else if (nanosecs >= NS_PER_HOUR) {
-                return "h";
+                return HOUR;
             } else if (nanosecs >= NS_PER_MIN) {
-                return "m";
+                return MINUTE;
             } else if (nanosecs >= NS_PER_SECOND) {
-                return "s";
+                return SECOND;
             } else if (nanosecs >= NS_PER_MS) {
-                return "ms";
+                return MILLI_SECOND;
             } else if (nanosecs >= NS_PER_US) {
-                return "us";
+                return MICRO_SECOND;
             }
-            return "ns";
+            return NANO_SECOND;
         }
     }
 }
