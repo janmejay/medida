@@ -4,7 +4,6 @@
 
 #include "medida/stats/ewma.h"
 
-#include <atomic>
 #include <cmath>
 
 namespace medida {
@@ -35,11 +34,11 @@ namespace medida {
             double getRate(std::chrono::nanoseconds duration = std::chrono::seconds {1}) const;
 
         private:
-            volatile bool initialized_;
+            bool initialized_;
 
-            volatile double rate_;
+            double rate_;
 
-            std::atomic<std::int64_t> uncounted_;
+            std::int64_t uncounted_;
 
             const double alpha_;
 
@@ -99,7 +98,7 @@ namespace medida {
         EWMA::Impl::Impl(Impl &other)
             : initialized_    {other.initialized_},
               rate_           {other.rate_},
-              uncounted_      {other.uncounted_.load()},
+              uncounted_      {other.uncounted_},
               alpha_          {other.alpha_},
               interval_nanos_ {other.interval_nanos_} { }
 
@@ -113,7 +112,8 @@ namespace medida {
 
 
         void EWMA::Impl::tick() {
-            double count = uncounted_.exchange(0);
+            double count = uncounted_;
+            uncounted_ = 0;
             auto instantRate = count / interval_nanos_;
             if (initialized_) {
                 rate_ += (alpha_ * (instantRate - rate_));

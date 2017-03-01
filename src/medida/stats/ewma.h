@@ -11,6 +11,8 @@
 
 namespace medida {
     namespace stats {
+        // This class is _not_ thread safe.
+        //    The user must ensure exclusive-access when calling into this.
         class EWMA {
 
         public:
