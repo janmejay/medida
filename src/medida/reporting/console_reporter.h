@@ -22,6 +22,8 @@ namespace medida {
 
             virtual void run();
 
+            using MetricProcessor::process;
+
             virtual void process(Counter& counter);
 
             virtual void process(Meter& meter);

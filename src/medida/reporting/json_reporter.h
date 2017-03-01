@@ -20,6 +20,8 @@ namespace medida {
 
             virtual ~JsonReporter();
 
+            using MetricProcessor::process;
+
             virtual void process(Counter& counter);
 
             virtual void process(Meter& meter);
