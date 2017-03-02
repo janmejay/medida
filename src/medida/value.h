@@ -20,16 +20,16 @@ namespace medida {
 
         ~Value();
 
-        void update(std::int64_t value);
+        void update(double value);
 
-        std::int64_t value() const;
+        double value() const;
 
         void process(MetricProcessor &processor);
 
         void clear();
 
     private:
-        std::atomic<std::int64_t> value_;
+        std::atomic<double> value_;
     };
 }
 

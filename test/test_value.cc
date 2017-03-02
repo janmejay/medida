@@ -12,7 +12,7 @@ TEST(ValueTest, anEmptyValue) {
     MetricsRegistry registry{};
     auto &value = registry.new_value({"a", "b", "c"});
 
-    EXPECT_EQ(0, value.value());
+    EXPECT_NEAR(0, value.value(), 0.0001);
 }
 
 TEST(ValueTest, aValueWithUpdate) {
@@ -21,7 +21,6 @@ TEST(ValueTest, aValueWithUpdate) {
 
     for (auto i = 1; i <= 1000; i++) {
         value.update(i);
+        EXPECT_NEAR(i, value.value(), 0.0001);
     }
-
-    EXPECT_EQ(1000, value.value());
 }

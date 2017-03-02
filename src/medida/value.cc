@@ -20,11 +20,11 @@ namespace medida {
         value_.store(0);
     }
 
-    std::int64_t Value::value() const {
+    double Value::value() const {
         return value_;
     }
 
-    void Value::update(std::int64_t value) {
-        value_.store(value);
+    void Value::update(double value) {
+        value_.store(value, std::memory_order_relaxed);
     }
 }
