@@ -168,25 +168,25 @@ private:
     }
 
 public:
-    std::string operator()(UdpReporter::MetricType type, UdpReporter::PropName prop, std::uint64_t val) const {
+    std::string operator()(UdpReporter::MetricType type, UdpReporter::PropName prop, std::uint64_t val) {
         return format(type, prop, val);
     }
-    std::string operator()(UdpReporter::MetricType type, UdpReporter::PropName prop, std::int64_t val) const {
+    std::string operator()(UdpReporter::MetricType type, UdpReporter::PropName prop, std::int64_t val) {
         return format(type, prop, val);
     }
-    std::string operator()(UdpReporter::MetricType type, UdpReporter::PropName prop, double val) const {
+    std::string operator()(UdpReporter::MetricType type, UdpReporter::PropName prop, double val) {
         return format(type, prop, val);
     }
-    std::string operator()(UdpReporter::MetricType type, UdpReporter::PropName prop, std::uint64_t val, UdpReporter::Unit unit) const {
+    std::string operator()(UdpReporter::MetricType type, UdpReporter::PropName prop, std::uint64_t val, UdpReporter::Unit unit) {
         return format(type, prop, val, unit);
     }
-    std::string operator()(UdpReporter::MetricType type, UdpReporter::PropName prop, double val, UdpReporter::Unit unit) const {
+    std::string operator()(UdpReporter::MetricType type, UdpReporter::PropName prop, double val, UdpReporter::Unit unit) {
         return format(type, prop, val, unit);
     }
-    std::string operator()(UdpReporter::MetricType type, UdpReporter::EventType evt_typ, UdpReporter::PropName prop, std::uint64_t val, UdpReporter::Unit unit) const {
+    std::string operator()(UdpReporter::MetricType type, UdpReporter::EventType evt_typ, UdpReporter::PropName prop, std::uint64_t val, UdpReporter::Unit unit) {
         return format(type, evt_typ, prop, val, unit);
     }
-    std::string operator()(UdpReporter::MetricType type, UdpReporter::EventType evt_typ, UdpReporter::PropName prop, double val, UdpReporter::Unit unit) const {
+    std::string operator()(UdpReporter::MetricType type, UdpReporter::EventType evt_typ, UdpReporter::PropName prop, double val, UdpReporter::Unit unit) {
         return format(type, evt_typ, prop, val, unit);
     }
 };

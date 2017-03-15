@@ -23,19 +23,21 @@ namespace medida {
 
             class Formatter {
             protected:
-                mutable const std::string* name;
+                const std::string* name;
             public:
-                void set_name(MetricName _name) const { name = &_name; }
-                virtual std::string operator()(MetricType type, PropName prop, std::uint64_t val) const = 0;
-                virtual std::string operator()(MetricType type, PropName prop, std::int64_t val) const = 0;
-                virtual std::string operator()(MetricType type, PropName prop, double val) const = 0;
-                virtual std::string operator()(MetricType type, PropName prop, std::uint64_t val, Unit unit) const = 0;
-                virtual std::string operator()(MetricType type, PropName prop, double val, Unit unit) const = 0;
-                virtual std::string operator()(MetricType type, EventType evt_typ, PropName prop, std::uint64_t val, Unit unit) const = 0;
-                virtual std::string operator()(MetricType type, EventType evt_typ, PropName prop, double val, Unit unit) const = 0;
+                Formatter() {}
+                virtual ~Formatter() {};
+                void set_name(MetricName _name) { name = &_name; }
+                virtual std::string operator()(MetricType type, PropName prop, std::uint64_t val) = 0;
+                virtual std::string operator()(MetricType type, PropName prop, std::int64_t val) = 0;
+                virtual std::string operator()(MetricType type, PropName prop, double val) = 0;
+                virtual std::string operator()(MetricType type, PropName prop, std::uint64_t val, Unit unit) = 0;
+                virtual std::string operator()(MetricType type, PropName prop, double val, Unit unit) = 0;
+                virtual std::string operator()(MetricType type, EventType evt_typ, PropName prop, std::uint64_t val, Unit unit) = 0;
+                virtual std::string operator()(MetricType type, EventType evt_typ, PropName prop, double val, Unit unit) = 0;
             };
 
-            UdpReporter(MetricsRegistry &registry, const Formatter& formatter, std::uint16_t port, const std::string& hostname = "127.0.0.1", const std::uint32_t reconnect_after = 8192);
+            UdpReporter(MetricsRegistry &registry, Formatter& formatter, std::uint16_t port, const std::string& hostname = "127.0.0.1", const std::uint32_t reconnect_after = 8192);
 
             virtual ~UdpReporter();
 

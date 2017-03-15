@@ -106,7 +106,7 @@ namespace medida {
         class UdpReporter::Impl : public MetricProcessor {
 
         public:
-            Impl(MetricsRegistry &registry, const Formatter& formatter, std::uint16_t port, const std::string& hostname, std::uint32_t reconnect_after);
+            Impl(MetricsRegistry &registry, Formatter& formatter, std::uint16_t port, const std::string& hostname, std::uint32_t reconnect_after);
 
             ~Impl();
 
@@ -127,13 +127,13 @@ namespace medida {
         private:
             medida::MetricsRegistry& registry_;
 
-            const Formatter& format_;
+            Formatter& format_;
 
             UdpSender sender_;
         };
 
 
-        UdpReporter::UdpReporter(MetricsRegistry &registry, const Formatter& formatter, std::uint16_t port, const std::string& hostname, std::uint32_t reconnect_after)
+        UdpReporter::UdpReporter(MetricsRegistry &registry, Formatter& formatter, std::uint16_t port, const std::string& hostname, std::uint32_t reconnect_after)
             : AbstractPollingReporter(),
               impl_ {new UdpReporter::Impl {registry, formatter, port, hostname, reconnect_after}} { }
 
@@ -149,7 +149,7 @@ namespace medida {
 // === Implementation ===
 
 
-        UdpReporter::Impl::Impl(MetricsRegistry &registry, const Formatter& formatter, std::uint16_t port, const std::string& hostname, std::uint32_t reconnect_after)
+        UdpReporter::Impl::Impl(MetricsRegistry &registry, Formatter& formatter, std::uint16_t port, const std::string& hostname, std::uint32_t reconnect_after)
             :registry_ (registry), format_ (formatter), sender_(hostname, port, reconnect_after) { }
 
 
