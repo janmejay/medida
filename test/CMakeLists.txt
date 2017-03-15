@@ -23,6 +23,7 @@ set(test_sources
   test_timer.cc
   test_value.cc
   reporting/test_collectd_reporter.cc
+  reporting/test_udp_reporter.cc
   reporting/test_console_reporter.cc
   reporting/test_json_reporter.cc
   stats/test_ewma.cc

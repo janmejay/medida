@@ -144,13 +144,13 @@ template <typename T> std::ostream& operator<<(std::ostream& os, const std::vect
     return os;
 }
 
-double atof(const std::string& str) {
+static double atof(const std::string& str) {
     return std::atof(str.c_str());
 }
 
 #endif
 
-TEST(CollectdReporterTest, foo) {
+TEST(CollectdReporterTest, reporting) {
     MetricsRegistry registry {};
     auto& counter = registry.new_counter({"test", "reporter", "mycounter"});
     auto& histogram = registry.new_histogram({"test", "reporter", "myhistogram"});

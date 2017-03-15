@@ -41,6 +41,7 @@ set(medida_SOURCES
   src/medida/value.cc
   src/medida/reporting/abstract_polling_reporter.cc
   src/medida/reporting/collectd_reporter.cc
+  src/medida/reporting/udp_reporter.cc
   src/medida/reporting/console_reporter.cc
   src/medida/reporting/json_reporter.cc
   src/medida/reporting/util.cc
@@ -64,6 +65,7 @@ set(medida_HEADERS
   src/medida/value.h
   src/medida/reporting/abstract_polling_reporter.h
   src/medida/reporting/collectd_reporter.h
+  src/medida/reporting/udp_reporter.h
   src/medida/reporting/console_reporter.h
   src/medida/reporting/json_reporter.h
   src/medida/reporting/util.h
@@ -124,6 +126,7 @@ install(FILES
 install(FILES
   src/medida/reporting/abstract_polling_reporter.h
   src/medida/reporting/collectd_reporter.h
+  src/medida/reporting/udp_reporter.h
   src/medida/reporting/console_reporter.h
   src/medida/reporting/json_reporter.h
   src/medida/reporting/util.h
