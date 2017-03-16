@@ -31,6 +31,12 @@ namespace medida {
 
             std::vector<int> connections_;
 
+            char buff[256];
+
+            const char* err_str(int err_code) {
+                return strerror_r(err_code, buff, sizeof(buff));
+            }
+
             void disconnect() {
                 assert(connected_);
                 connected_ = false;
@@ -44,7 +50,6 @@ namespace medida {
             void reconnect() {
                 assert(! connected_);
 
-                char buff[256];
                 struct addrinfo hints, *res = NULL, *r;
                 memset(&hints, 0, sizeof(hints));
                 hints.ai_family = AF_INET;
@@ -52,19 +57,21 @@ namespace medida {
                 auto port_str = std::to_string(port_);
                 int ret = getaddrinfo(host_.c_str(), port_str.c_str(), &hints, &res);
                 if (ret != 0) {
-                    std::cerr << "Couldn't get addrinfo: " << strerror_r(ret, buff, sizeof(buff)) << "\n";
+                    std::cerr << "Couldn't get addrinfo: " << err_str(ret) << "\n";
                     return;
                 }
 
                 for (r = res; r != NULL; r = r->ai_next) {
                     int sock = socket(r->ai_family, r->ai_socktype, r->ai_protocol);
                     if (sock < 0) {
-                        std::cerr << "Couldn't create socket: " << strerror_r(errno, buff, sizeof(buff)) << "\n";
+                        int err = errno;
+                        std::cerr << "Couldn't create socket: " << err_str(err) << "\n";
                         continue;
                     }
 
                     if (connect(sock, r->ai_addr, r->ai_addrlen) < 0) {
-                        std::cerr << "Failed to connect socket: " << sock << " error: " << strerror_r(errno, buff, sizeof(buff)) << "\n";
+                        int err = errno;
+                        std::cerr << "Failed to connect socket: " << sock << " error: " << err_str(err) << "\n";
                         close(sock);
                         continue;
                     }
@@ -82,9 +89,9 @@ namespace medida {
                 for (auto conn : connections_) {
                     auto sent = ::send(conn, msg, len, 0);
                     if (sent < 0) {
-                        std::cerr << "Failed to report metric (errno: "  << errno << ", fd: " << conn << ")\n";
-                    }
-                    assert(sent == len);
+                        int err = errno;
+                        std::cerr << "Failed to report metric (errno: " << err << ", error: '"  << err_str(err) << "', fd: " << conn << ")\n";
+                    } else assert(sent == len);
                 }
             }
 
