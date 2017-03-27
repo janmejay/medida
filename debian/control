@@ -1,8 +1,8 @@
 Source: medida
 Section: libs
 Priority: optional
-Maintainer: Daniel Lundin <dln@eintr.org>
-Homepage: https://github.com/dln/medida/
+Maintainer: Janmejay Singh <singh.janmejay@gmail.com>
+Homepage: https://github.com/janmejay/medida/
 Standards-Version: 3.9.2
 Build-Depends: debhelper (>= 8), cmake (>= 2.8.8), doxygen, pkg-config
 
