@@ -1,3 +1,12 @@
+medida (0.3.0) unstable; urgency=low
+
+  * Uniform interface.
+  * Fixed several data-races.
+  * UDP-based reporter with externalized formatting.
+  * Better test-coverage for collectd reporter.
+
+ -- Janmejay Singh <singh.janmejay@gmail.com>  Fri, 27 Mar 2012 15:30:00 +0530
+
 medida (0.1.0) unstable; urgency=low
 
   * First package.
