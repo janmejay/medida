@@ -175,12 +175,11 @@ if(BUILD_DOCS)
     COMMAND ${DOXYGEN_EXECUTABLE} ${PROJECT_BINARY_DIR}/doxygen.cfg
     SOURCES ${PROJECT_BINARY_DIR}/doxygen.cfg
   )
+
+  install(DIRECTORY ${PROJECT_BINARY_DIR}/doc/
+    DESTINATION share/doc/libmedida-dev/html/
+  )
 endif()
-
-install(DIRECTORY ${PROJECT_BINARY_DIR}/doc/
-  DESTINATION share/doc/libmedida-dev/html/
-)
-
 
 ## Examples
 
