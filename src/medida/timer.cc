@@ -8,6 +8,7 @@
 #include "medida/meter.h"
 
 #include "medida/timer_context.h"
+#include <stdexcept>
 
 namespace medida {
     class Timer::Impl {
