@@ -178,6 +178,7 @@ namespace medida {
 
 
         Snapshot ExpDecaySample::Impl::snapshot() const {
+            std::lock_guard<std::mutex> lock {mutex_};
             std::vector<double> vals;
             vals.reserve(values_.size());
             for (auto& kv : values_) {
