@@ -51,7 +51,7 @@ namespace medida {
 
             std::map<double, std::int64_t> values_;
 
-            std::mutex mutex_;
+            mutable std::mutex mutex_;
 
             mutable std::mt19937 rng_;
 
