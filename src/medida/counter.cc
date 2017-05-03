@@ -5,6 +5,7 @@
 #include "medida/counter.h"
 
 #include <atomic>
+#include <sstream>
 
 namespace medida {
     class Counter::Impl {
@@ -25,9 +26,13 @@ namespace medida {
         void dec(std::int64_t n = 1);
         
         void clear();
+
+        const std::string& attribute_signature() const;
         
     private:
         std::atomic<std::int64_t> count_;
+
+        std::string attr_sig_;
     };
 
 
@@ -66,11 +71,19 @@ namespace medida {
         impl_->clear();
     }
 
+    const std::string& Counter::attribute_signature() const {
+        return impl_->attribute_signature();
+    }
+
 
 // === Implementation ===
 
 
-    Counter::Impl::Impl(std::int64_t init) : count_ {init} { }
+    Counter::Impl::Impl(std::int64_t init) : count_ {init} {
+        std::stringstream ss;
+        ss << "initial_value='" <<count_ << "'";
+        attr_sig_ = ss.str();
+    }
 
 
     Counter::Impl::~Impl() { }
@@ -98,5 +111,9 @@ namespace medida {
 
     void Counter::Impl::clear() {
         set_count(0);
+    }
+
+    const std::string& Counter::Impl::attribute_signature() const {
+        return attr_sig_;
     }
 }

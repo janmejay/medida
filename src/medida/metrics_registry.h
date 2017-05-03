@@ -20,6 +20,14 @@
 #include "medida/value.h"
 
 namespace medida {
+    class Conflict : public std::runtime_error {
+
+    public:
+        Conflict(const std::string& msg);
+
+        virtual ~Conflict();
+    };
+
     class MetricsRegistry {
 
     public:

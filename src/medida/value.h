@@ -28,8 +28,12 @@ namespace medida {
 
         void clear();
 
+        const std::string& attribute_signature() const;
+
     private:
-        std::atomic<double> value_;
+        class Impl;
+
+        std::unique_ptr<Impl> impl_;
     };
 }
 

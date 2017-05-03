@@ -43,6 +43,8 @@ namespace medida {
 
         void clear();
 
+        const std::string& attribute_signature() const;
+
     private:
         class Impl;
 

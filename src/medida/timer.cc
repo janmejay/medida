@@ -9,6 +9,7 @@
 
 #include "medida/timer_context.h"
 #include <stdexcept>
+#include <sstream>
 
 namespace medida {
     class Timer::Impl {
@@ -57,6 +58,8 @@ namespace medida {
 
         void time(std::function<void()>);
 
+        const std::string& attribute_signature() const;
+
     private:
         Timer& self_;
 
@@ -69,6 +72,8 @@ namespace medida {
         Meter meter_;
 
         Histogram histogram_;
+
+        std::string attr_sig_;
     };
 
 
@@ -174,10 +179,15 @@ namespace medida {
     }
 
 
+    const std::string& Timer::attribute_signature() const {
+        return impl_->attribute_signature();
+    }
+
+
 // === Implementation ===
 
 
-    Timer::Impl::Impl(Timer& self, std::chrono::nanoseconds duration_unit, std::chrono::nanoseconds rate_unit) 
+    Timer::Impl::Impl(Timer& self, std::chrono::nanoseconds duration_unit, std::chrono::nanoseconds rate_unit)
         : self_ (self),
           duration_unit_       {duration_unit},
           duration_unit_nanos_ {duration_unit.count()},
@@ -187,6 +197,11 @@ namespace medida {
               if (duration_unit_nanos_ <= 0) {
                   throw std::invalid_argument("Invalid duration-unit value given.");
               }
+
+              std::stringstream ss;
+              ss << "duration_unit='" << duration_unit.count() << " ns', "
+                 << "rate_unit='" << rate_unit.count() << " ns'";
+              attr_sig_ = ss.str();
           }
 
 
@@ -296,5 +311,10 @@ namespace medida {
 
     TimerContext Timer::Impl::time_scope() {
         return {self_};
+    }
+
+
+    const std::string& Timer::Impl::attribute_signature() const {
+        return attr_sig_;
     }
 }

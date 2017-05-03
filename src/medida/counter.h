@@ -29,6 +29,8 @@ namespace medida {
         void dec(std::int64_t n = 1);
         
         void clear();
+
+        const std::string& attribute_signature() const;
         
     private:
         class Impl;
