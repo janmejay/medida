@@ -4,8 +4,8 @@ cmake_minimum_required (VERSION 2.8.3)
 ## Metadata
 
 project (medida)
-set (medida_VERSION_MAJOR 0)
-set (medida_VERSION_MINOR 4)
+set (medida_VERSION_MAJOR 1)
+set (medida_VERSION_MINOR 0)
 set (medida_VERSION_PATCH 0)
 set (medida_VERSION_TAG "")
 set (medida_VERSION "${medida_VERSION_MAJOR}.${medida_VERSION_MINOR}.${medida_VERSION_PATCH}${medida_VERSION_TAG}")
