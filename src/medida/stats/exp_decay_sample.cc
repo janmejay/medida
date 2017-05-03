@@ -128,10 +128,10 @@ namespace medida {
 
 
         void ExpDecaySample::Impl::update(std::int64_t value, Clock::time_point timestamp) {
+            std::lock_guard<std::mutex> lock {mutex_};
             if (timestamp >= nextScaleTime_) {
                 rescale(timestamp);
             }
-            std::lock_guard<std::mutex> lock {mutex_};
             auto dur = std::chrono::duration_cast<std::chrono::seconds>(timestamp - startTime_);
             auto priority = std::exp(alpha_ * dur.count()) / dist_(rng_);
             auto count = ++count_;
@@ -150,7 +150,6 @@ namespace medida {
 
 
         void ExpDecaySample::Impl::rescale(const Clock::time_point& when) {
-            std::lock_guard<std::mutex> lock {mutex_};
             nextScaleTime_ = when + kRESCALE_THRESHOLD;
             auto oldStartTime = startTime_;
             startTime_ = when;

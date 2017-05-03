@@ -194,6 +194,7 @@ public:
 TEST(UdpReporterTest, reporting) {
     MetricsRegistry registry {};
     auto& counter = registry.new_counter({"test", "reporter", "mycounter"});
+    auto& value = registry.new_value({"test", "reporter", "myvalue"});
     auto& histogram = registry.new_histogram({"test", "reporter", "myhistogram"});
     auto& meter = registry.new_meter({"test", "reporter", "mymeter"}, "cycles");
     auto& timer = registry.new_timer({"test", "reporter", "mytimer"});
@@ -206,6 +207,7 @@ TEST(UdpReporterTest, reporting) {
         meter.mark();
         std::this_thread::sleep_for(std::chrono::milliseconds(5));
     }
+    value.update(1729);
 
     std::atomic<bool> do_stop { false };
     std::promise<bool> all_good;
@@ -243,6 +245,8 @@ TEST(UdpReporterTest, reporting) {
     // }
 
     EXPECT_EQ("100", value_of(msgs, "test.reporter.mycounter(counter > count)"));
+
+    EXPECT_EQ("1729", value_of(msgs, "test.reporter.myvalue(tracker > value)"));
 
     EXPECT_NEAR(1.000000, atof(value_of(msgs, "test.reporter.myhistogram(histogram > min)")), 0.5);
     EXPECT_NEAR(100.000000, atof(value_of(msgs, "test.reporter.myhistogram(histogram > max)")), 0.5);

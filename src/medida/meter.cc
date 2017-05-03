@@ -6,6 +6,7 @@
 
 #include <atomic>
 #include <mutex>
+#include <sstream>
 
 namespace medida {
 
@@ -36,6 +37,8 @@ namespace medida {
 
         void process(MetricProcessor& processor);
 
+        const std::string& attribute_signature() const;
+
     private:
         const std::string event_type_;
 
@@ -54,6 +57,8 @@ namespace medida {
         stats::EWMA m15_rate_;
 
         mutable std::mutex mutex_;
+
+        std::string attr_sig_;
 
         void tick_if_necessary();
     };
@@ -109,6 +114,10 @@ namespace medida {
         processor.process(*this);  // FIXME: pimpl?
     }
 
+    const std::string& Meter::attribute_signature() const {
+        return impl_->attribute_signature();
+    }
+
 
 // === Implementation ===
 
@@ -122,7 +131,13 @@ namespace medida {
           m1_rate_    (stats::EWMA::one_minute_ewma()),
           m5_rate_    (stats::EWMA::five_minute_ewma()),
           m15_rate_   (stats::EWMA::fifteen_minute_ewma()),
-          mutex_      {} { }
+          mutex_      {} {
+        std::chrono::seconds s(1);
+        std::stringstream ss;
+        ss << "event_type='" << event_type << "', "
+           << "rate_unit='" << rate_unit.count() << " ns'";
+        attr_sig_ = ss.str();
+    }
 
 
     Meter::Impl::~Impl() { }
@@ -200,4 +215,8 @@ namespace medida {
         }
     }
 
+
+    const std::string& Meter::Impl::attribute_signature() const {
+        return attr_sig_;
+    }
 }

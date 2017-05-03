@@ -44,6 +44,8 @@ namespace medida {
 
         void clear();
 
+        const std::string& attribute_signature() const;
+
     private:
         static const std::uint64_t kDefaultSampleSize = 1028;
 
@@ -62,6 +64,8 @@ namespace medida {
         double variance_s_;
 
         mutable std::mutex variance_mutex_;
+
+        std::string attr_sig_;
     };
 
 
@@ -115,12 +119,19 @@ namespace medida {
         impl_->update(value);
     }
 
+
     stats::Snapshot Histogram::snapshot() const {
         return impl_->snapshot();
     }
 
+
     double Histogram::variance() const {
         return impl_->variance();
+    }
+
+
+    const std::string& Histogram::attribute_signature() const {
+        return impl_->attribute_signature();
     }
 
 
@@ -128,13 +139,17 @@ namespace medida {
 
 
     Histogram::Impl::Impl(SampleType sample_type) {
+        attr_sig_ = "sampling='";
         if (sample_type == kUniform) {
             sample_ = std::unique_ptr<stats::Sample>(new stats::UniformSample(kDefaultSampleSize));
+            attr_sig_ += "uniform";
         } else if (sample_type == kBiased) {
             sample_ = std::unique_ptr<stats::Sample>(new stats::ExpDecaySample(kDefaultSampleSize, kDefaultAlpha));
+            attr_sig_ += "biased";
         } else {
             throw std::invalid_argument("invalid sample_type");
         }
+        attr_sig_ += "'";
         clear();
     }
 
@@ -232,4 +247,7 @@ namespace medida {
         }
     }
 
+    const std::string& Histogram::Impl::attribute_signature() const {
+        return attr_sig_;
+    }
 }

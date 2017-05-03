@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <string>
+#include <ostream>
 
 namespace medida {
     class MetricName {

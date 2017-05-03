@@ -41,6 +41,8 @@ namespace medida {
 
         void process(MetricProcessor& processor);
 
+        virtual const std::string& attribute_signature() const;
+
     private:
         class Impl;
 
