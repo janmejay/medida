@@ -123,6 +123,8 @@ namespace medida {
 
             void process(Counter& counter);
 
+            void process(Value& value);
+
             void process(Meter& meter);
 
             void process(Histogram& histogram);
@@ -182,6 +184,9 @@ namespace medida {
             send("counter", "count", counter.count());
         }
 
+        void UdpReporter::Impl::process(Value& value) {
+            send("tracker", "value", value.value());
+        }
 
         void UdpReporter::Impl::process(Meter& meter) {
             auto event_type = meter.event_type();
